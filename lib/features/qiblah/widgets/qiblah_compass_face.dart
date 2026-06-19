@@ -5,6 +5,34 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/theme/app_theme.dart';
 
+class KaabaMarker extends StatelessWidget {
+  const KaabaMarker({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: AppColors.emeraldPrimary,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.goldAccent, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.goldAccent.withValues(alpha: 0.35),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: const Icon(
+        Icons.mosque,
+        size: 18,
+        color: AppColors.goldMuted,
+      ),
+    );
+  }
+}
+
 class QiblahCompassFace extends StatelessWidget {
   const QiblahCompassFace({
     super.key,
@@ -27,40 +55,54 @@ class QiblahCompassFace extends StatelessWidget {
       alignment: Alignment.center,
     );
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 350),
-          width: 310,
-          height: 310,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: aligned ? AppColors.goldAccent : Colors.transparent,
-              width: aligned ? 4 : 0,
+    return SizedBox(
+      width: 310,
+      height: 310,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 350),
+            width: 310,
+            height: 310,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: aligned ? AppColors.goldAccent : Colors.transparent,
+                width: aligned ? 4 : 0,
+              ),
+              boxShadow: aligned
+                  ? [
+                      BoxShadow(
+                        color: AppColors.goldAccent.withValues(alpha: 0.35),
+                        blurRadius: 24,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : null,
             ),
-            boxShadow: aligned
-                ? [
-                    BoxShadow(
-                      color: AppColors.goldAccent.withValues(alpha: 0.35),
-                      blurRadius: 24,
-                      spreadRadius: 2,
-                    ),
-                  ]
-                : null,
+            child: Transform.rotate(
+              angle: direction * (pi / 180) * -1,
+              child: compassSvg,
+            ),
           ),
-          child: Transform.rotate(
-            angle: direction * (pi / 180) * -1,
-            child: compassSvg,
+          Transform.rotate(
+            angle: qiblah * (pi / 180) * -1,
+            alignment: Alignment.center,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                needleSvg,
+                Positioned(
+                  top: 18,
+                  child: const KaabaMarker(),
+                ),
+              ],
+            ),
           ),
-        ),
-        Transform.rotate(
-          angle: qiblah * (pi / 180) * -1,
-          alignment: Alignment.center,
-          child: needleSvg,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

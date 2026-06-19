@@ -6,7 +6,9 @@ import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../core/models/enums.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import '../location/manual_city_picker.dart';
 import 'widgets/calibration_banner.dart';
@@ -16,12 +18,45 @@ import 'widgets/sensor_error.dart';
 class QiblahScreen extends ConsumerWidget {
   const QiblahScreen({super.key});
 
+  Future<void> _useCurrentLocation(BuildContext context, WidgetRef ref) async {
+    await ref.read(locationProvider.notifier).refreshGps();
+    await ref.read(prayerTimesProvider.notifier).load();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    final location = ref.read(locationProvider).location;
+    final messenger = ScaffoldMessenger.of(context);
+    if (location?.source == LocationSource.gps) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text('Current location saved'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.emeraldPrimary,
+        ),
+      );
+    } else {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Unable to get GPS. Try selecting a city instead.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Qiblah'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.my_location),
+            tooltip: 'Use current location',
+            onPressed: () => _useCurrentLocation(context, ref),
+          ),
           IconButton(
             icon: const Icon(Icons.location_city_outlined),
             tooltip: 'Change city',
