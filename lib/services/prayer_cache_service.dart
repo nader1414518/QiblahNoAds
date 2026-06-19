@@ -14,15 +14,19 @@ class PrayerCacheService {
   Future<Map<String, DailyPrayerTimes>> loadOrCompute({
     required double latitude,
     required double longitude,
+    required String timeZoneId,
     required CalculationMethodId methodId,
     required MadhabId madhabId,
+    required PrayerTimeAdjustments adjustments,
     required DateTime month,
   }) async {
     final key = _calculator.cacheKey(
       latitude: latitude,
       longitude: longitude,
+      timeZoneId: timeZoneId,
       methodId: methodId,
       madhabId: madhabId,
+      adjustments: adjustments,
       month: month,
     );
 
@@ -36,9 +40,11 @@ class PrayerCacheService {
     final computed = _calculator.calculateMonth(
       latitude: latitude,
       longitude: longitude,
+      timeZoneId: timeZoneId,
       month: month,
       methodId: methodId,
       madhabId: madhabId,
+      adjustments: adjustments,
     );
 
     final encoded = _encodeCache(computed);

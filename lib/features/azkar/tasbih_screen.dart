@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/premium_widgets.dart';
 import '../../providers/app_providers.dart';
 
 class TasbihScreen extends ConsumerStatefulWidget {
@@ -89,27 +90,45 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
         behavior: HitTestBehavior.opaque,
         onTap: _increment,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$_count',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryGreen,
+          child: PremiumCard(
+            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 56),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.goldAccent, width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.emeraldPrimary.withValues(alpha: 0.15),
+                        blurRadius: 20,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$_count',
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.emeraldPrimary,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Tap anywhere to count',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Milestones at 33 and 100',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
+                const SizedBox(height: 20),
+                Text(
+                  'Tap anywhere to count',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Milestones at 33 and 100',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
         ),
       ),

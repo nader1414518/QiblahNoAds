@@ -1,45 +1,66 @@
-import 'package:adhan/adhan.dart';
+import 'package:adhan/adhan.dart' hide PrayerAdjustments;
 
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
+import 'timezone_service.dart';
 
 class PrayerCalculationService {
+  PrayerCalculationService(this._timezoneService);
+
+  final TimezoneService _timezoneService;
+
   CalculationParameters _parameters(
     CalculationMethodId methodId,
     MadhabId madhabId,
+    PrayerTimeAdjustments adjustments,
   ) {
     final method = switch (methodId) {
       CalculationMethodId.muslimWorldLeague =>
         CalculationMethod.muslim_world_league,
       CalculationMethodId.isna => CalculationMethod.north_america,
       CalculationMethodId.ummAlQura => CalculationMethod.umm_al_qura,
+      CalculationMethodId.egyptian => CalculationMethod.egyptian,
+      CalculationMethodId.karachi => CalculationMethod.karachi,
     };
 
     final params = method.getParameters();
     params.madhab = madhabId == MadhabId.hanafi ? Madhab.hanafi : Madhab.shafi;
+    params.adjustments.fajr = adjustments.fajr;
+    params.adjustments.dhuhr = adjustments.dhuhr;
+    params.adjustments.asr = adjustments.asr;
+    params.adjustments.maghrib = adjustments.maghrib;
+    params.adjustments.isha = adjustments.isha;
     return params;
   }
 
   DailyPrayerTimes calculateForDate({
     required double latitude,
     required double longitude,
+    required String timeZoneId,
     required DateTime date,
     required CalculationMethodId methodId,
     required MadhabId madhabId,
+    required PrayerTimeAdjustments adjustments,
   }) {
     final coordinates = Coordinates(latitude, longitude);
-    final params = _parameters(methodId, madhabId);
-    final prayerTimes = PrayerTimes(coordinates, DateComponents.from(date), params);
+    final params = _parameters(methodId, madhabId, adjustments);
+    final utcOffset = _timezoneService.utcOffsetForDate(timeZoneId, date);
+    final prayerTimes = PrayerTimes(
+      coordinates,
+      DateComponents.from(date),
+      params,
+      utcOffset: utcOffset,
+    );
 
     return DailyPrayerTimes(
       date: DateTime(date.year, date.month, date.day),
       times: {
-        PrayerName.fajr: prayerTimes.fajr.toLocal(),
-        PrayerName.sunrise: prayerTimes.sunrise.toLocal(),
-        PrayerName.dhuhr: prayerTimes.dhuhr.toLocal(),
-        PrayerName.asr: prayerTimes.asr.toLocal(),
-        PrayerName.maghrib: prayerTimes.maghrib.toLocal(),
-        PrayerName.isha: prayerTimes.isha.toLocal(),
+        PrayerName.fajr: prayerTimes.fajr,
+        PrayerName.sunrise: prayerTimes.sunrise,
+        PrayerName.dhuhr: prayerTimes.dhuhr,
+        PrayerName.asr: prayerTimes.asr,
+        PrayerName.maghrib: prayerTimes.maghrib,
+        PrayerName.isha: prayerTimes.isha,
       },
     );
   }
@@ -47,9 +68,11 @@ class PrayerCalculationService {
   List<DailyPrayerTimes> calculateMonth({
     required double latitude,
     required double longitude,
+    required String timeZoneId,
     required DateTime month,
     required CalculationMethodId methodId,
     required MadhabId madhabId,
+    required PrayerTimeAdjustments adjustments,
   }) {
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     return List.generate(daysInMonth, (index) {
@@ -57,9 +80,11 @@ class PrayerCalculationService {
       return calculateForDate(
         latitude: latitude,
         longitude: longitude,
+        timeZoneId: timeZoneId,
         date: day,
         methodId: methodId,
         madhabId: madhabId,
+        adjustments: adjustments,
       );
     });
   }
@@ -135,14 +160,19 @@ class PrayerCalculationService {
   String cacheKey({
     required double latitude,
     required double longitude,
+    required String timeZoneId,
     required CalculationMethodId methodId,
     required MadhabId madhabId,
+    required PrayerTimeAdjustments adjustments,
     required DateTime month,
   }) {
     return '${latitude.toStringAsFixed(4)}_'
         '${longitude.toStringAsFixed(4)}_'
+        '${timeZoneId}_'
         '${methodId.storageKey}_'
         '${madhabId.storageKey}_'
+        '${adjustments.fajr}_${adjustments.dhuhr}_${adjustments.asr}_'
+        '${adjustments.maghrib}_${adjustments.isha}_'
         '${month.year}_${month.month}';
   }
 }

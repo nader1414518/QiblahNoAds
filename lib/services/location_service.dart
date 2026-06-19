@@ -5,12 +5,18 @@ import 'package:geolocator/geolocator.dart';
 
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
+import 'calculation_method_resolver.dart';
 import 'preferences_service.dart';
+import 'timezone_service.dart';
 
 class LocationService {
-  LocationService(this._preferences);
+  LocationService(
+    this._preferences,
+    this._timezoneService,
+  );
 
   final PreferencesService _preferences;
+  final TimezoneService _timezoneService;
   List<City>? _cities;
   static Future<LocationPermission>? _ongoingPermissionRequest;
 
@@ -52,6 +58,7 @@ class LocationService {
     final lng = _preferences.getLongitude();
     final cityName = _preferences.getCityName();
     final source = _preferences.getLocationSource();
+    final timeZoneId = _preferences.getTimeZoneId();
 
     if (lat == null || lng == null || cityName == null || source == null) {
       return null;
@@ -62,6 +69,8 @@ class LocationService {
       longitude: lng,
       cityName: cityName,
       source: source,
+      timeZoneId: timeZoneId ??
+          _timezoneService.resolveTimeZoneId(latitude: lat, longitude: lng),
     );
   }
 
@@ -79,56 +88,59 @@ class LocationService {
     }
 
     try {
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 10),
-        ),
-      );
-
-      const cityName = 'Current Location';
-      await _preferences.saveLocation(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        cityName: cityName,
-        source: LocationSource.gps,
-      );
-
-      return AppLocation(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        cityName: cityName,
-        source: LocationSource.gps,
-      );
-    } catch (_) {
-      final lastKnown = await Geolocator.getLastKnownPosition();
-      if (lastKnown == null) {
-        return null;
+      Position position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            timeLimit: Duration(seconds: 10),
+          ),
+        );
+      } catch (_) {
+        final lastKnown = await Geolocator.getLastKnownPosition();
+        if (lastKnown == null) {
+          return null;
+        }
+        position = lastKnown;
       }
 
       const cityName = 'Current Location';
+      final timeZoneId = _timezoneService.resolveTimeZoneId(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+
       await _preferences.saveLocation(
-        latitude: lastKnown.latitude,
-        longitude: lastKnown.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
         cityName: cityName,
         source: LocationSource.gps,
+        timeZoneId: timeZoneId,
       );
 
       return AppLocation(
-        latitude: lastKnown.latitude,
-        longitude: lastKnown.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
         cityName: cityName,
         source: LocationSource.gps,
+        timeZoneId: timeZoneId,
       );
+    } catch (_) {
+      return null;
     }
   }
 
   Future<AppLocation> saveManualCity(City city) async {
+    await _preferences.setCalculationMethod(
+      CalculationMethodResolver.forCountry(city.country),
+    );
+
     await _preferences.saveLocation(
       latitude: city.lat,
       longitude: city.lng,
       cityName: city.displayName,
       source: LocationSource.manual,
+      timeZoneId: city.tz,
     );
 
     return AppLocation(
@@ -136,6 +148,7 @@ class LocationService {
       longitude: city.lng,
       cityName: city.displayName,
       source: LocationSource.manual,
+      timeZoneId: city.tz,
     );
   }
 }

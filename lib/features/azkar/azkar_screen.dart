@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
+import '../../core/widgets/premium_widgets.dart';
 import 'tasbih_screen.dart';
 import 'widgets/azkar_list_tile.dart';
 
@@ -21,6 +22,12 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
   late TabController _tabController;
   Map<String, List<AzkarItem>> _azkar = {};
   bool _loading = true;
+
+  static const _categoryDescriptions = {
+    AzkarCategory.morning: 'Morning remembrance after Fajr — Hisn al-Muslim',
+    AzkarCategory.evening: 'Evening remembrance after Asr — Hisn al-Muslim',
+    AzkarCategory.postPrayer: 'Dhikr after every obligatory prayer',
+  };
 
   @override
   void initState() {
@@ -80,13 +87,19 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
               controller: _tabController,
               children: categories.map((category) {
                 final items = _azkar[category.jsonKey] ?? [];
-                return ListView.separated(
+                return ListView(
                   padding: const EdgeInsets.all(16),
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    return AzkarListTile(item: items[index]);
-                  },
+                  children: [
+                    SectionHeader(
+                      title: category.label,
+                      subtitle: _categoryDescriptions[category],
+                    ),
+                    const SizedBox(height: 12),
+                    ...items.map((item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: AzkarListTile(item: item),
+                    )),
+                  ],
                 );
               }).toList(),
             ),

@@ -6,6 +6,7 @@ import 'features/shell/main_shell.dart';
 import 'providers/app_providers.dart';
 import 'services/notification_service.dart';
 import 'services/preferences_service.dart';
+import 'services/timezone_service.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -24,6 +25,7 @@ class App extends ConsumerWidget {
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+  TimezoneService.ensureInitialized();
 
   final preferences = await PreferencesService.create();
   final notifications = NotificationService(preferences);

@@ -7,17 +7,25 @@ import '../services/notification_service.dart';
 import '../services/prayer_cache_service.dart';
 import '../services/prayer_calculation_service.dart';
 import '../services/preferences_service.dart';
+import '../services/timezone_service.dart';
 
 final preferencesServiceProvider = Provider<PreferencesService>((ref) {
   throw UnimplementedError('PreferencesService must be overridden');
 });
 
+final timezoneServiceProvider = Provider<TimezoneService>(
+  (ref) => TimezoneService(),
+);
+
 final locationServiceProvider = Provider<LocationService>((ref) {
-  return LocationService(ref.watch(preferencesServiceProvider));
+  return LocationService(
+    ref.watch(preferencesServiceProvider),
+    ref.watch(timezoneServiceProvider),
+  );
 });
 
 final prayerCalculationServiceProvider = Provider<PrayerCalculationService>(
-  (ref) => PrayerCalculationService(),
+  (ref) => PrayerCalculationService(ref.watch(timezoneServiceProvider)),
 );
 
 final prayerCacheServiceProvider = Provider<PrayerCacheService>((ref) {
@@ -198,13 +206,16 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
     final now = DateTime.now();
     final method = _preferences.getCalculationMethod();
     final madhab = _preferences.getMadhab();
+    final adjustments = _preferences.getPrayerAdjustments();
 
     try {
       final monthCache = await _cacheService.loadOrCompute(
         latitude: location.latitude,
         longitude: location.longitude,
+        timeZoneId: location.timeZoneId,
         methodId: method,
         madhabId: madhab,
+        adjustments: adjustments,
         month: DateTime(now.year, now.month),
       );
 

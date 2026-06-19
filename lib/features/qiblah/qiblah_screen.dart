@@ -1,18 +1,16 @@
 import 'dart:async';
-import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import '../location/manual_city_picker.dart';
 import 'widgets/calibration_banner.dart';
+import 'widgets/qiblah_compass_face.dart';
 import 'widgets/sensor_error.dart';
 
 class QiblahScreen extends ConsumerWidget {
@@ -190,25 +188,18 @@ class _LocationError extends StatelessWidget {
   }
 }
 
-class QiblahCompassWidget extends StatefulWidget {
+class QiblahCompassWidget extends ConsumerStatefulWidget {
   const QiblahCompassWidget({super.key});
 
   @override
-  State<QiblahCompassWidget> createState() => _QiblahCompassWidgetState();
+  ConsumerState<QiblahCompassWidget> createState() => _QiblahCompassWidgetState();
 }
 
-class _QiblahCompassWidgetState extends State<QiblahCompassWidget> {
+class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
   bool _wasAligned = false;
   bool _streamTimedOut = false;
   StreamSubscription<QiblahDirection>? _subscription;
   QiblahDirection? _direction;
-  final _compassSvg = SvgPicture.asset('assets/compass.svg');
-  final _needleSvg = SvgPicture.asset(
-    'assets/needle.svg',
-    fit: BoxFit.contain,
-    height: 280,
-    alignment: Alignment.center,
-  );
 
   @override
   void initState() {
@@ -253,6 +244,8 @@ class _QiblahCompassWidgetState extends State<QiblahCompassWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final cityName = ref.watch(locationProvider).location?.cityName;
+
     if (_streamTimedOut && _direction == null) {
       return const SensorErrorWidget(
         message:
@@ -274,52 +267,28 @@ class _QiblahCompassWidgetState extends State<QiblahCompassWidget> {
     return Column(
       children: [
         if (needsCalibration) const CalibrationBanner(),
+        if (cityName != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              cityName,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
         Expanded(
           child: Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: aligned
-                          ? AppTheme.accentGreen
-                          : Colors.transparent,
-                      width: 4,
-                    ),
-                  ),
-                  child: Transform.rotate(
-                    angle: direction.direction * (pi / 180) * -1,
-                    child: _compassSvg,
-                  ),
-                ),
-                Transform.rotate(
-                  angle: direction.qiblah * (pi / 180) * -1,
-                  alignment: Alignment.center,
-                  child: _needleSvg,
-                ),
-              ],
+            child: QiblahCompassFace(
+              direction: direction.direction,
+              qiblah: direction.qiblah,
+              aligned: aligned,
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(
-                aligned ? 'Aligned with Qiblah' : 'Rotate to align',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: aligned ? AppTheme.primaryGreen : null,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text('Offset: ${direction.offset.toStringAsFixed(1)}°'),
-            ],
+          padding: const EdgeInsets.all(20),
+          child: QiblahStatusBanner(
+            aligned: aligned,
+            offset: direction.offset,
           ),
         ),
       ],

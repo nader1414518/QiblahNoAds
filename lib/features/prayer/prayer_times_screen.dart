@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
+import '../../core/utils/date_formatters.dart';
 import '../../providers/app_providers.dart';
 import '../../services/prayer_calculation_service.dart';
 import '../location/manual_city_picker.dart';
@@ -55,6 +56,8 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     final locationState = ref.watch(locationProvider);
     final prayerState = ref.watch(prayerTimesProvider);
     final calculator = ref.watch(prayerCalculationServiceProvider);
+    final preferences = ref.watch(preferencesServiceProvider);
+    final use24Hour = preferences.getUse24Hour();
     final now = DateTime.now();
 
     final nextPrayer = prayerState.today == null
@@ -91,6 +94,8 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           prayerState: prayerState,
           nextPrayer: nextPrayer,
           nextTime: nextTime,
+          use24Hour: use24Hour,
+          dateLabel: formatDisplayDate(now),
         ),
       ),
     );
@@ -103,6 +108,8 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     required PrayerTimesState prayerState,
     required PrayerName? nextPrayer,
     required DateTime? nextTime,
+    required bool use24Hour,
+    required String dateLabel,
   }) {
     if (prayerState.isLoading && prayerState.today == null) {
       return ListView(
@@ -148,11 +155,14 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           target: nextTime,
           prayerName: nextPrayer,
           cityName: locationName,
+          hijriLabel: dateLabel,
         ),
         const SizedBox(height: 16),
         Text(
-          'Today',
-          style: Theme.of(context).textTheme.titleMedium,
+          'Today\'s Schedule',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 8),
         ...prayerState.schedule.map((entry) {
@@ -161,6 +171,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
             time: entry.time,
             isNext: entry.isNext,
             isCurrent: entry.isCurrent,
+            use24Hour: use24Hour,
           );
         }),
       ],

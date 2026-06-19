@@ -2,6 +2,8 @@ enum CalculationMethodId {
   muslimWorldLeague,
   isna,
   ummAlQura,
+  egyptian,
+  karachi,
 }
 
 extension CalculationMethodIdExt on CalculationMethodId {
@@ -13,6 +15,10 @@ extension CalculationMethodIdExt on CalculationMethodId {
         return 'ISNA';
       case CalculationMethodId.ummAlQura:
         return 'Umm al-Qura';
+      case CalculationMethodId.egyptian:
+        return 'Egyptian General Authority';
+      case CalculationMethodId.karachi:
+        return 'University of Karachi';
     }
   }
 

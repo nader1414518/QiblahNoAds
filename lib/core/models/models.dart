@@ -6,12 +6,14 @@ class City {
     required this.country,
     required this.lat,
     required this.lng,
+    required this.tz,
   });
 
   final String name;
   final String country;
   final double lat;
   final double lng;
+  final String tz;
 
   String get displayName => '$name, $country';
 
@@ -21,6 +23,7 @@ class City {
       country: json['country'] as String,
       lat: (json['lat'] as num).toDouble(),
       lng: (json['lng'] as num).toDouble(),
+      tz: json['tz'] as String? ?? 'UTC',
     );
   }
 }
@@ -31,12 +34,14 @@ class AppLocation {
     required this.longitude,
     required this.cityName,
     required this.source,
+    required this.timeZoneId,
   });
 
   final double latitude;
   final double longitude;
   final String cityName;
   final LocationSource source;
+  final String timeZoneId;
 }
 
 class AzkarItem {
@@ -44,17 +49,20 @@ class AzkarItem {
     required this.arabic,
     required this.english,
     required this.repeat,
+    this.source,
   });
 
   final String arabic;
   final String english;
   final int repeat;
+  final String? source;
 
   factory AzkarItem.fromJson(Map<String, dynamic> json) {
     return AzkarItem(
       arabic: json['arabic'] as String,
       english: json['english'] as String,
       repeat: json['repeat'] as int? ?? 1,
+      source: json['source'] as String?,
     );
   }
 }
@@ -81,4 +89,20 @@ class PrayerScheduleEntry {
   final DateTime time;
   final bool isNext;
   final bool isCurrent;
+}
+
+class PrayerTimeAdjustments {
+  const PrayerTimeAdjustments({
+    this.fajr = 0,
+    this.dhuhr = 0,
+    this.asr = 0,
+    this.maghrib = 0,
+    this.isha = 0,
+  });
+
+  final int fajr;
+  final int dhuhr;
+  final int asr;
+  final int maghrib;
+  final int isha;
 }
