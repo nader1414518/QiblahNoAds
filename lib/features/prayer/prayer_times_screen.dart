@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/utils/date_formatters.dart';
+import '../../core/widgets/safe_area_widgets.dart';
 import '../../providers/app_providers.dart';
 import '../../services/prayer_calculation_service.dart';
 import '../location/manual_city_picker.dart';
@@ -82,20 +83,23 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await ref.read(locationProvider.notifier).refreshGps();
-          await ref.read(prayerTimesProvider.notifier).load();
-        },
-        child: _buildBody(
-          context: context,
-          ref: ref,
-          locationName: locationState.location?.cityName ?? 'Unknown',
-          prayerState: prayerState,
-          nextPrayer: nextPrayer,
-          nextTime: nextTime,
-          use24Hour: use24Hour,
-          dateLabel: formatDisplayDate(now),
+      body: SafeScreenBody(
+        bottom: false,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(locationProvider.notifier).refreshGps();
+            await ref.read(prayerTimesProvider.notifier).load();
+          },
+          child: _buildBody(
+            context: context,
+            ref: ref,
+            locationName: locationState.location?.cityName ?? 'Unknown',
+            prayerState: prayerState,
+            nextPrayer: nextPrayer,
+            nextTime: nextTime,
+            use24Hour: use24Hour,
+            dateLabel: formatDisplayDate(now),
+          ),
         ),
       ),
     );

@@ -7,9 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../core/models/enums.dart';
+import '../../core/models/models.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
+import '../../services/qiblah_bearing.dart';
+import '../../core/widgets/safe_area_widgets.dart';
 import '../location/manual_city_picker.dart';
 import 'widgets/calibration_banner.dart';
 import 'widgets/qiblah_compass_face.dart';
@@ -48,6 +51,8 @@ class QiblahScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final location = ref.watch(locationProvider.select((state) => state.location));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Qiblah'),
@@ -74,13 +79,18 @@ class QiblahScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: const _QiblahBody(),
+      body: SafeScreenBody(
+        bottom: false,
+        child: _QiblahBody(location: location),
+      ),
     );
   }
 }
 
 class _QiblahBody extends ConsumerStatefulWidget {
-  const _QiblahBody();
+  const _QiblahBody({required this.location});
+
+  final AppLocation? location;
 
   @override
   ConsumerState<_QiblahBody> createState() => _QiblahBodyState();
@@ -95,12 +105,6 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
   void initState() {
     super.initState();
     _initialize();
-  }
-
-  @override
-  void dispose() {
-    FlutterQiblah().dispose();
-    super.dispose();
   }
 
   Future<void> _initialize() async {
@@ -161,6 +165,20 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
       );
     }
 
+    if (widget.location == null) {
+      if (!status.enabled) {
+        return _LocationError(
+          message: 'Please enable location services or select a city',
+          onRetry: _retryLocationAccess,
+        );
+      }
+
+      return _LocationError(
+        message: 'Location unavailable. Select a city or grant permission.',
+        onRetry: _retryLocationAccess,
+      );
+    }
+
     if (!status.enabled) {
       return _LocationError(
         message: 'Please enable location services',
@@ -171,15 +189,14 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
     switch (status.status) {
       case LocationPermission.always:
       case LocationPermission.whileInUse:
-        return const QiblahCompassWidget();
+        break;
       case LocationPermission.denied:
+      case LocationPermission.deniedForever:
+        if (widget.location!.source == LocationSource.manual) {
+          break;
+        }
         return _LocationError(
           message: 'Location permission denied. Select a city or grant permission.',
-          onRetry: _retryLocationAccess,
-        );
-      case LocationPermission.deniedForever:
-        return _LocationError(
-          message: 'Location permission permanently denied. Select a city in settings.',
           onRetry: _retryLocationAccess,
         );
       default:
@@ -188,6 +205,17 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
           onRetry: _retryLocationAccess,
         );
     }
+
+    return QiblahCompassWidget(
+      key: ValueKey(_locationKey(widget.location!)),
+      latitude: widget.location!.latitude,
+      longitude: widget.location!.longitude,
+      cityName: widget.location!.cityName,
+    );
+  }
+
+  String _locationKey(AppLocation location) {
+    return '${location.latitude}:${location.longitude}:${location.source.name}';
   }
 }
 
@@ -224,7 +252,16 @@ class _LocationError extends StatelessWidget {
 }
 
 class QiblahCompassWidget extends ConsumerStatefulWidget {
-  const QiblahCompassWidget({super.key});
+  const QiblahCompassWidget({
+    super.key,
+    required this.latitude,
+    required this.longitude,
+    required this.cityName,
+  });
+
+  final double latitude;
+  final double longitude;
+  final String cityName;
 
   @override
   ConsumerState<QiblahCompassWidget> createState() => _QiblahCompassWidgetState();
@@ -235,16 +272,38 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
   bool _streamTimedOut = false;
   StreamSubscription<QiblahDirection>? _subscription;
   QiblahDirection? _direction;
+  Timer? _timeoutTimer;
+  double? _lastHeading;
 
   @override
   void initState() {
     super.initState();
+    _startQiblahStream();
+  }
+
+  @override
+  void didUpdateWidget(covariant QiblahCompassWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.latitude != widget.latitude ||
+        oldWidget.longitude != widget.longitude) {
+      _wasAligned = false;
+      _applyHeading(_lastHeading);
+    }
+  }
+
+  void _startQiblahStream() {
+    _subscription?.cancel();
+    _timeoutTimer?.cancel();
+    _direction = null;
+    _streamTimedOut = false;
+    _wasAligned = false;
+
     _subscription = FlutterQiblah.qiblahStream.listen(
       (direction) {
         if (!mounted) {
           return;
         }
-        setState(() => _direction = direction);
+        _applyHeading(direction.direction);
       },
       onError: (_) {
         if (!mounted) {
@@ -254,7 +313,7 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
       },
     );
 
-    Future<void>.delayed(const Duration(seconds: 8), () {
+    _timeoutTimer = Timer(const Duration(seconds: 8), () {
       if (!mounted || _direction != null) {
         return;
       }
@@ -262,9 +321,26 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
     });
   }
 
+  void _applyHeading(double? heading) {
+    if (heading == null) {
+      return;
+    }
+
+    _lastHeading = heading;
+    final bearing = QiblahBearing.fromNorth(widget.latitude, widget.longitude);
+    final qiblah = heading + (360 - bearing);
+    final offset = QiblahBearing.normalizeAngle(bearing - heading);
+
+    setState(
+      () => _direction = QiblahDirection(qiblah, heading, offset),
+    );
+  }
+
   @override
   void dispose() {
+    _timeoutTimer?.cancel();
     _subscription?.cancel();
+    FlutterQiblah().dispose();
     super.dispose();
   }
 
@@ -279,8 +355,6 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final cityName = ref.watch(locationProvider).location?.cityName;
-
     if (_streamTimedOut && _direction == null) {
       return const SensorErrorWidget(
         message:
@@ -302,14 +376,13 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
     return Column(
       children: [
         if (needsCalibration) const CalibrationBanner(),
-        if (cityName != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              cityName,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(
+            widget.cityName,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
+        ),
         Expanded(
           child: Center(
             child: QiblahCompassFace(

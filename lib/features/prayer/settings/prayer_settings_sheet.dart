@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/safe_area_widgets.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_widgets.dart';
@@ -77,12 +78,7 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: MediaQuery.viewInsetsOf(context).bottom + 24,
-      ),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,6 +203,7 @@ void showPrayerSettingsSheet(BuildContext context) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    builder: (_) => const PrayerSettingsSheet(),
+    useSafeArea: true,
+    builder: (_) => const SafeSheet(child: PrayerSettingsSheet()),
   );
 }

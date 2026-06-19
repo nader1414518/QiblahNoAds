@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/widgets/safe_area_widgets.dart';
 import '../../providers/app_providers.dart';
 import 'manual_city_picker.dart';
 
@@ -29,13 +30,16 @@ class _LocationGateState extends ConsumerState<LocationGate> {
 
     if (locationState.isLoading && locationState.location == null) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: SafeFullBody(
+          child: Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
     if (locationState.needsManualSelection && locationState.location == null) {
       return ManualCityPicker(
         message: locationState.error,
+        bottomSafeArea: false,
         onSelected: () async {
           await ref.read(prayerTimesProvider.notifier).load();
         },

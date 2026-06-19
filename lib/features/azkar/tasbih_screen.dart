@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/widgets/safe_area_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/premium_widgets.dart';
 import '../../providers/app_providers.dart';
@@ -45,19 +46,21 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
   Future<void> _reset() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reset counter?'),
-        content: const Text('This will clear your current Tasbih session count.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset'),
-          ),
-        ],
+      builder: (context) => SafeDialog(
+        child: AlertDialog(
+          title: const Text('Reset counter?'),
+          content: const Text('This will clear your current Tasbih session count.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Reset'),
+            ),
+          ],
+        ),
       ),
     );
 
@@ -86,48 +89,50 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
           ),
         ],
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _increment,
-        child: Center(
-          child: PremiumCard(
-            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 56),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.goldAccent, width: 3),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.emeraldPrimary.withValues(alpha: 0.15),
-                        blurRadius: 20,
+      body: SafeScreenBody(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _increment,
+          child: Center(
+            child: PremiumCard(
+              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 56),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.goldAccent, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.emeraldPrimary.withValues(alpha: 0.15),
+                          blurRadius: 20,
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$_count',
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.emeraldPrimary,
                       ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$_count',
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.emeraldPrimary,
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Tap anywhere to count',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Milestones at 33 and 100',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  Text(
+                    'Tap anywhere to count',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Milestones at 33 and 100',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

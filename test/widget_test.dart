@@ -11,6 +11,7 @@ import 'package:qiblah_no_ads/providers/app_providers.dart';
 import 'package:qiblah_no_ads/services/notification_service.dart';
 import 'package:qiblah_no_ads/services/preferences_service.dart';
 import 'package:qiblah_no_ads/services/prayer_calculation_service.dart';
+import 'package:qiblah_no_ads/services/qiblah_bearing.dart';
 import 'package:qiblah_no_ads/services/timezone_service.dart';
 
 void main() {
@@ -56,6 +57,19 @@ void main() {
     expect(daily.times.length, 6);
     expect(daily.times[PrayerName.fajr], isNotNull);
     expect(daily.times[PrayerName.isha], isNotNull);
+  });
+
+  test('qiblah bearing matches known city references', () {
+    expect(QiblahBearing.fromNorth(40.7128, -74.0059), closeTo(58.481, 0.01));
+    expect(QiblahBearing.fromNorth(38.9072, -77.0369), closeTo(56.560, 0.01));
+    expect(QiblahBearing.fromNorth(30.0444, 31.2357), closeTo(136.137, 0.01));
+  });
+
+  test('alignment offset is zero when facing qiblah', () {
+    final bearing = QiblahBearing.fromNorth(30.0444, 31.2357);
+    final offset = QiblahBearing.normalizeAngle(bearing - bearing);
+
+    expect(offset, closeTo(0, 0.001));
   });
 
   testWidgets('App shell shows three navigation tabs', (WidgetTester tester) async {
