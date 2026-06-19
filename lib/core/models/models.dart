@@ -44,24 +44,59 @@ class AppLocation {
   final String timeZoneId;
 }
 
+class AzkarReference {
+  const AzkarReference({
+    required this.hisn,
+    required this.type,
+    required this.citation,
+    this.collection,
+    this.narrator,
+    this.grade,
+  });
+
+  final int hisn;
+  final String type;
+  final String citation;
+  final String? collection;
+  final String? narrator;
+  final String? grade;
+
+  factory AzkarReference.fromJson(Map<String, dynamic> json) {
+    return AzkarReference(
+      hisn: json['hisn'] as int,
+      type: json['type'] as String,
+      citation: json['citation'] as String,
+      collection: json['collection'] as String?,
+      narrator: json['narrator'] as String?,
+      grade: json['grade'] as String?,
+    );
+  }
+}
+
 class AzkarItem {
   const AzkarItem({
     required this.arabic,
     required this.english,
     required this.repeat,
+    this.reference,
     this.source,
   });
 
   final String arabic;
   final String english;
   final int repeat;
+  final AzkarReference? reference;
   final String? source;
 
   factory AzkarItem.fromJson(Map<String, dynamic> json) {
+    final referenceJson = json['reference'];
     return AzkarItem(
       arabic: json['arabic'] as String,
       english: json['english'] as String,
       repeat: json['repeat'] as int? ?? 1,
+      reference: referenceJson is Map<String, dynamic>
+          ? AzkarReference.fromJson(referenceJson)
+          : null,
       source: json['source'] as String?,
     );
   }
