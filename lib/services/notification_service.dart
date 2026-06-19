@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -119,7 +118,7 @@ class NotificationService {
         continue;
       }
 
-      final locale = _preferences.getLocale() ?? const Locale('en');
+      final locale = _preferences.getEffectiveLocale();
       final l10n = lookupAppLocalizations(locale);
 
       await _plugin.zonedSchedule(

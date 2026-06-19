@@ -19,7 +19,7 @@ class App extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp(
-      title: 'Al-Qiblah & Prayer Companion',
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
@@ -50,7 +50,7 @@ Future<void> bootstrap() async {
       overrides: [
         preferencesServiceProvider.overrideWithValue(preferences),
         notificationServiceProvider.overrideWithValue(notifications),
-        localeProvider.overrideWith((ref) => preferences.getLocale()),
+        localeProvider.overrideWith((ref) => preferences.getEffectiveLocale()),
       ],
       child: const App(),
     ),

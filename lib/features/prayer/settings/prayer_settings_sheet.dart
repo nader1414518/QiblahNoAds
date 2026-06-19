@@ -102,7 +102,7 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
               subtitle: l10n.languageSubtitle,
             ),
             ...supportedAppLocales.map((locale) {
-              final selected = currentLocale?.languageCode == locale.languageCode;
+              final selected = currentLocale.languageCode == locale.languageCode;
               return ListTile(
                 title: Text(l10n.languageLabel(locale)),
                 trailing: selected

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:qiblah_no_ads/core/l10n/l10n_extensions.dart';
 import 'package:qiblah_no_ads/core/models/enums.dart';
 import 'package:qiblah_no_ads/core/models/models.dart';
 import 'package:qiblah_no_ads/l10n/app_localizations.dart';
@@ -125,6 +126,34 @@ void main() {
     expect(offset, closeTo(0, 0.001));
   });
 
+  test('resolveSupportedLocale maps to supported languages', () {
+    expect(resolveSupportedLocale(const Locale('ar', 'SA')), const Locale('ar'));
+    expect(resolveSupportedLocale(const Locale('ur', 'PK')), const Locale('ur'));
+    expect(resolveSupportedLocale(const Locale('es', 'ES')), const Locale('en'));
+    expect(resolveSupportedLocale(null), const Locale('en'));
+  });
+
+  test('getEffectiveLocale uses device language when no preference is saved', () async {
+    final preferences = await PreferencesService.create();
+
+    expect(preferences.getLocale(), isNull);
+    expect(
+      preferences.getEffectiveLocale(),
+      resolveSupportedLocale(getDeviceLocale()),
+    );
+  });
+
+  test('lookupAppLocalizations returns localized app title', () {
+    expect(
+      lookupAppLocalizations(const Locale('ur')).appTitle,
+      'القبلہ اور نماز کا ساتھی',
+    );
+    expect(
+      lookupAppLocalizations(const Locale('en')).appTitle,
+      'Al-Qiblah & Prayer Companion',
+    );
+  });
+
   test('AzkarItem.fromJson parses reference metadata', () {
     final item = AzkarItem.fromJson({
       'arabic': 'سُبْحَانَ اللَّهِ',
@@ -145,6 +174,46 @@ void main() {
     expect(item.reference?.citation, 'Muslim 597');
     expect(item.reference?.narrator, 'Abu Hurayrah');
     expect(item.reference?.grade, 'Sahih');
+  });
+
+  testWidgets('Urdu locale renders RTL navigation labels', (WidgetTester tester) async {
+    final preferences = await PreferencesService.create();
+    await preferences.saveLocation(
+      latitude: 21.4225,
+      longitude: 39.8262,
+      cityName: 'Makkah, Saudi Arabia',
+      source: LocationSource.manual,
+      timeZoneId: 'Asia/Riyadh',
+    );
+    final notifications = NotificationService(preferences);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          preferencesServiceProvider.overrideWithValue(preferences),
+          notificationServiceProvider.overrideWithValue(notifications),
+        ],
+        child: const MaterialApp(
+          locale: Locale('ur'),
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('ur')],
+          home: MainShell(initialIndex: 2),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final direction = Directionality.of(tester.element(find.byType(NavigationBar)));
+    expect(direction, ui.TextDirection.rtl);
+    expect(find.text('قبلہ'), findsOneWidget);
+    expect(find.text('نماز کے اوقات'), findsOneWidget);
+    expect(find.text('اذکار'), findsWidgets);
   });
 
   testWidgets('Arabic locale renders RTL navigation labels', (WidgetTester tester) async {

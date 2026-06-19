@@ -49,8 +49,8 @@ final madhabProvider = StateProvider<MadhabId>((ref) {
   return ref.watch(preferencesServiceProvider).getMadhab();
 });
 
-final localeProvider = StateProvider<Locale?>((ref) {
-  return ref.watch(preferencesServiceProvider).getLocale();
+final localeProvider = StateProvider<Locale>((ref) {
+  return ref.watch(preferencesServiceProvider).getEffectiveLocale();
 });
 
 class LocationState {

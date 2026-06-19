@@ -124,3 +124,23 @@ const supportedAppLocales = [
   Locale('bn'),
   Locale('de'),
 ];
+
+/// The device's current locale from the platform dispatcher.
+Locale getDeviceLocale() {
+  return WidgetsBinding.instance.platformDispatcher.locale;
+}
+
+/// Maps a locale to the closest supported app locale, defaulting to English.
+Locale resolveSupportedLocale(Locale? locale) {
+  if (locale == null) {
+    return const Locale('en');
+  }
+
+  for (final supported in supportedAppLocales) {
+    if (supported.languageCode == locale.languageCode) {
+      return supported;
+    }
+  }
+
+  return const Locale('en');
+}

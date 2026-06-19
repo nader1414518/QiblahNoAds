@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/constants/app_constants.dart';
+import '../core/l10n/l10n_extensions.dart';
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
 
@@ -148,6 +149,11 @@ class PreferencesService {
       return Locale(parts[0], parts[1]);
     }
     return Locale(parts[0]);
+  }
+
+  /// Saved locale, or the closest supported match for the device language.
+  Locale getEffectiveLocale() {
+    return resolveSupportedLocale(getLocale() ?? getDeviceLocale());
   }
 
   Future<void> setLocale(Locale locale) async {
