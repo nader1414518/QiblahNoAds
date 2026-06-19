@@ -89,7 +89,12 @@ class PrayerCalculationService {
     });
   }
 
-  PrayerName? nextPrayer(DailyPrayerTimes daily, DateTime now) {
+  PrayerName? nextPrayer(DailyPrayerTimes daily, String timeZoneId) {
+    final now = _timezoneService.nowInLocation(timeZoneId);
+    return _nextPrayerForNow(daily, now);
+  }
+
+  PrayerName? _nextPrayerForNow(DailyPrayerTimes daily, DateTime now) {
     final ordered = [
       PrayerName.fajr,
       PrayerName.dhuhr,
@@ -108,8 +113,13 @@ class PrayerCalculationService {
     return PrayerName.fajr;
   }
 
-  DateTime? nextPrayerTime(DailyPrayerTimes daily, DateTime now) {
-    final next = nextPrayer(daily, now);
+  DateTime? nextPrayerTime(
+    DailyPrayerTimes daily,
+    String timeZoneId, {
+    DailyPrayerTimes? tomorrow,
+  }) {
+    final now = _timezoneService.nowInLocation(timeZoneId);
+    final next = _nextPrayerForNow(daily, now);
     if (next == null) {
       return null;
     }
@@ -119,10 +129,14 @@ class PrayerCalculationService {
       return time;
     }
 
-    return null;
+    return tomorrow?.times[PrayerName.fajr];
   }
 
-  List<PrayerScheduleEntry> buildSchedule(DailyPrayerTimes daily, DateTime now) {
+  List<PrayerScheduleEntry> buildSchedule(
+    DailyPrayerTimes daily,
+    String timeZoneId,
+  ) {
+    final now = _timezoneService.nowInLocation(timeZoneId);
     final ordered = [
       PrayerName.fajr,
       PrayerName.sunrise,
@@ -132,7 +146,7 @@ class PrayerCalculationService {
       PrayerName.isha,
     ];
 
-    final next = nextPrayer(daily, now);
+    final next = _nextPrayerForNow(daily, now);
     PrayerName? current;
 
     for (var i = ordered.length - 1; i >= 0; i--) {

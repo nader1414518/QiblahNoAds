@@ -45,4 +45,49 @@ class TimezoneService {
       return DateTime.now().timeZoneOffset;
     }
   }
+
+  /// Wall-clock "now" in [timeZoneId], encoded as UTC to match adhan output.
+  DateTime nowInLocation(String timeZoneId) {
+    ensureInitialized();
+    try {
+      final location = tz.getLocation(timeZoneId);
+      final zoned = tz.TZDateTime.now(location);
+      return DateTime.utc(
+        zoned.year,
+        zoned.month,
+        zoned.day,
+        zoned.hour,
+        zoned.minute,
+        zoned.second,
+        zoned.millisecond,
+        zoned.microsecond,
+      );
+    } catch (_) {
+      final now = DateTime.now();
+      return DateTime.utc(
+        now.year,
+        now.month,
+        now.day,
+        now.hour,
+        now.minute,
+        now.second,
+        now.millisecond,
+        now.microsecond,
+      );
+    }
+  }
+
+  tz.TZDateTime toLocationDateTime(String timeZoneId, DateTime prayerTime) {
+    ensureInitialized();
+    final location = tz.getLocation(timeZoneId);
+    return tz.TZDateTime(
+      location,
+      prayerTime.year,
+      prayerTime.month,
+      prayerTime.day,
+      prayerTime.hour,
+      prayerTime.minute,
+      prayerTime.second,
+    );
+  }
 }

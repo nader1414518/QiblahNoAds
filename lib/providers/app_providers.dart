@@ -231,7 +231,7 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
         return;
       }
 
-      final schedule = _calculator.buildSchedule(today, now);
+      final schedule = _calculator.buildSchedule(today, location.timeZoneId);
       state = PrayerTimesState(
         today: today,
         tomorrow: tomorrowTimes,
@@ -242,6 +242,7 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
       await _notificationService.reschedulePrayerNotifications(
         today: today,
         tomorrow: tomorrowTimes,
+        timeZoneId: location.timeZoneId,
       );
     } catch (error) {
       state = PrayerTimesState(

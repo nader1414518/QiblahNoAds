@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/models/enums.dart';
+import '../../../services/timezone_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_widgets.dart';
 
@@ -29,10 +30,12 @@ class CountdownTimer extends StatefulWidget {
     super.key,
     required this.target,
     required this.prayerName,
+    required this.timeZoneId,
   });
 
   final DateTime? target;
   final PrayerName? prayerName;
+  final String timeZoneId;
 
   @override
   State<CountdownTimer> createState() => _CountdownTimerState();
@@ -52,7 +55,8 @@ class _CountdownTimerState extends State<CountdownTimer> {
   @override
   void didUpdateWidget(CountdownTimer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.target != widget.target) {
+    if (oldWidget.target != widget.target ||
+        oldWidget.timeZoneId != widget.timeZoneId) {
       _updateRemaining();
     }
   }
@@ -64,7 +68,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
       return;
     }
 
-    final now = DateTime.now();
+    final now = TimezoneService().nowInLocation(widget.timeZoneId);
     setState(() {
       _remaining = target.isAfter(now)
           ? target.difference(now)
@@ -120,12 +124,14 @@ class NextPrayerCard extends StatelessWidget {
     required this.prayerName,
     required this.cityName,
     required this.hijriLabel,
+    required this.timeZoneId,
   });
 
   final DateTime? target;
   final PrayerName? prayerName;
   final String cityName;
   final String hijriLabel;
+  final String timeZoneId;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +169,7 @@ class NextPrayerCard extends StatelessWidget {
             child: CountdownTimer(
               target: target,
               prayerName: prayerName,
+              timeZoneId: timeZoneId,
             ),
           ),
         ],

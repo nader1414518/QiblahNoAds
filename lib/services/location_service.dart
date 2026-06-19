@@ -110,6 +110,15 @@ class LocationService {
         longitude: position.longitude,
       );
 
+      final cities = await loadCities();
+      await _preferences.setCalculationMethod(
+        CalculationMethodResolver.forCoordinates(
+          position.latitude,
+          position.longitude,
+          cities,
+        ),
+      );
+
       await _preferences.saveLocation(
         latitude: position.latitude,
         longitude: position.longitude,

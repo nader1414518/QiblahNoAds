@@ -5,6 +5,7 @@ import 'package:timezone/timezone.dart' as tz;
 import '../core/constants/app_constants.dart';
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
+import '../services/timezone_service.dart';
 import 'preferences_service.dart';
 
 class NotificationService {
@@ -87,10 +88,12 @@ class NotificationService {
   Future<void> reschedulePrayerNotifications({
     required DailyPrayerTimes today,
     required DailyPrayerTimes? tomorrow,
+    required String timeZoneId,
   }) async {
     await cancelAllPrayerNotifications();
 
-    final now = DateTime.now();
+    final timezoneService = TimezoneService();
+    final now = timezoneService.nowInLocation(timeZoneId);
     final notifiable = [
       PrayerName.fajr,
       PrayerName.dhuhr,
@@ -117,7 +120,7 @@ class NotificationService {
         _notificationIdFor(prayer),
         'Prayer Time',
         'It is time for ${prayer.label}',
-        tz.TZDateTime.from(scheduledTime, tz.local),
+        timezoneService.toLocationDateTime(timeZoneId, scheduledTime),
         const NotificationDetails(
           android: AndroidNotificationDetails(
             'prayer_reminders',

@@ -5,8 +5,8 @@ import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/utils/date_formatters.dart';
 import '../../core/widgets/safe_area_widgets.dart';
-import '../../providers/app_providers.dart';
 import '../../services/prayer_calculation_service.dart';
+import '../../providers/app_providers.dart';
 import '../location/manual_city_picker.dart';
 import 'settings/prayer_settings_sheet.dart';
 import 'widgets/prayer_widgets.dart';
@@ -34,16 +34,13 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     required PrayerCalculationService calculator,
     required DailyPrayerTimes today,
     required DailyPrayerTimes? tomorrow,
-    required DateTime now,
+    required String timeZoneId,
   }) {
-    final time = calculator.nextPrayerTime(today, now);
-    if (time != null) {
-      return time;
-    }
-    if (tomorrow != null) {
-      return tomorrow.times[PrayerName.fajr];
-    }
-    return null;
+    return calculator.nextPrayerTime(
+      today,
+      timeZoneId,
+      tomorrow: tomorrow,
+    );
   }
 
   @override
@@ -59,18 +56,20 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     final calculator = ref.watch(prayerCalculationServiceProvider);
     final preferences = ref.watch(preferencesServiceProvider);
     final use24Hour = preferences.getUse24Hour();
-    final now = DateTime.now();
+    final timeZoneId = locationState.location?.timeZoneId ?? 'UTC';
+    final timezoneService = ref.watch(timezoneServiceProvider);
+    final now = timezoneService.nowInLocation(timeZoneId);
 
     final nextPrayer = prayerState.today == null
         ? null
-        : calculator.nextPrayer(prayerState.today!, now);
+        : calculator.nextPrayer(prayerState.today!, timeZoneId);
     final nextTime = prayerState.today == null
         ? null
         : _resolveNextTime(
             calculator: calculator,
             today: prayerState.today!,
             tomorrow: prayerState.tomorrow,
-            now: now,
+            timeZoneId: timeZoneId,
           );
 
     return Scaffold(
@@ -99,6 +98,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
             nextTime: nextTime,
             use24Hour: use24Hour,
             dateLabel: formatDisplayDate(now),
+            timeZoneId: timeZoneId,
           ),
         ),
       ),
@@ -114,6 +114,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     required DateTime? nextTime,
     required bool use24Hour,
     required String dateLabel,
+    required String timeZoneId,
   }) {
     if (prayerState.isLoading && prayerState.today == null) {
       return ListView(
@@ -160,6 +161,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           prayerName: nextPrayer,
           cityName: locationName,
           hijriLabel: dateLabel,
+          timeZoneId: timeZoneId,
         ),
         const SizedBox(height: 16),
         Text(

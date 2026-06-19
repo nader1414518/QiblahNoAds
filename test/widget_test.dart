@@ -8,6 +8,7 @@ import 'package:qiblah_no_ads/core/models/enums.dart';
 import 'package:qiblah_no_ads/core/models/models.dart';
 import 'package:qiblah_no_ads/features/shell/main_shell.dart';
 import 'package:qiblah_no_ads/providers/app_providers.dart';
+import 'package:qiblah_no_ads/services/calculation_method_resolver.dart';
 import 'package:qiblah_no_ads/services/notification_service.dart';
 import 'package:qiblah_no_ads/services/preferences_service.dart';
 import 'package:qiblah_no_ads/services/prayer_calculation_service.dart';
@@ -57,6 +58,54 @@ void main() {
     expect(daily.times.length, 6);
     expect(daily.times[PrayerName.fajr], isNotNull);
     expect(daily.times[PrayerName.isha], isNotNull);
+  });
+
+  test('countdown remaining uses location timezone', () {
+    final timezoneService = TimezoneService();
+    final calculator = PrayerCalculationService(timezoneService);
+    final daily = calculator.calculateForDate(
+      latitude: 30.0444,
+      longitude: 31.2357,
+      timeZoneId: 'Africa/Cairo',
+      date: DateTime(2025, 6, 19),
+      methodId: CalculationMethodId.egyptian,
+      madhabId: MadhabId.shafi,
+      adjustments: const PrayerTimeAdjustments(),
+    );
+
+    final dhuhr = daily.times[PrayerName.dhuhr]!;
+    final oneHourBefore = dhuhr.subtract(const Duration(hours: 1));
+    final remaining = dhuhr.difference(oneHourBefore);
+
+    expect(remaining.inMinutes, 60);
+  });
+
+  test('calculation method resolves from nearest city for GPS', () {
+    const cities = [
+      City(
+        name: 'Cairo',
+        country: 'Egypt',
+        lat: 30.0444,
+        lng: 31.2357,
+        tz: 'Africa/Cairo',
+      ),
+      City(
+        name: 'Riyadh',
+        country: 'Saudi Arabia',
+        lat: 24.7136,
+        lng: 46.6753,
+        tz: 'Asia/Riyadh',
+      ),
+    ];
+
+    expect(
+      CalculationMethodResolver.forCoordinates(30.05, 31.24, cities),
+      CalculationMethodId.egyptian,
+    );
+    expect(
+      CalculationMethodResolver.forCoordinates(24.71, 46.67, cities),
+      CalculationMethodId.ummAlQura,
+    );
   });
 
   test('qiblah bearing matches known city references', () {
