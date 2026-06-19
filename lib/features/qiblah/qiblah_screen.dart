@@ -54,48 +54,65 @@ class _QiblahBody extends ConsumerStatefulWidget {
 }
 
 class _QiblahBodyState extends ConsumerState<_QiblahBody> {
-  final _locationStreamController = StreamController<LocationStatus>.broadcast();
+  bool _isInitializing = true;
   bool? _sensorSupported;
-
-  Stream<LocationStatus> get _locationStream => _locationStreamController.stream;
+  LocationStatus? _locationStatus;
 
   @override
   void initState() {
     super.initState();
-    _checkSensorSupport();
-    _checkLocationStatus();
-  }
-
-  Future<void> _checkSensorSupport() async {
-    try {
-      final supported = await FlutterQiblah.androidDeviceSensorSupport();
-      setState(() => _sensorSupported = supported);
-    } catch (_) {
-      setState(() => _sensorSupported = true);
-    }
+    _initialize();
   }
 
   @override
   void dispose() {
-    _locationStreamController.close();
     FlutterQiblah().dispose();
     super.dispose();
   }
 
-  Future<void> _checkLocationStatus() async {
-    final locationStatus = await FlutterQiblah.checkLocationStatus();
-    if (!_locationStreamController.isClosed) {
-      _locationStreamController.add(locationStatus);
+  Future<void> _initialize() async {
+    try {
+      bool? sensorResult;
+      try {
+        sensorResult = await FlutterQiblah.androidDeviceSensorSupport();
+      } catch (_) {
+        sensorResult = true;
+      }
+      final sensorSupported = sensorResult ?? true;
+
+      final locationStatus = await FlutterQiblah.checkLocationStatus();
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _sensorSupported = sensorSupported;
+        _locationStatus = locationStatus;
+        _isInitializing = false;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _isInitializing = false);
     }
   }
 
   Future<void> _retryLocationAccess() async {
+    if (!mounted) {
+      return;
+    }
+    setState(() => _isInitializing = true);
     await ref.read(locationProvider.notifier).refreshGps();
-    await _checkLocationStatus();
+    await _initialize();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isInitializing) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     if (_sensorSupported == false) {
       return const SensorErrorWidget(
         message:
@@ -103,44 +120,41 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
       );
     }
 
-    return StreamBuilder<LocationStatus>(
-      stream: _locationStream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final status = _locationStatus;
+    if (status == null) {
+      return _LocationError(
+        message: 'Unable to read location status',
+        onRetry: _retryLocationAccess,
+      );
+    }
 
-        final status = snapshot.data;
-        if (status == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    if (!status.enabled) {
+      return _LocationError(
+        message: 'Please enable location services',
+        onRetry: _retryLocationAccess,
+      );
+    }
 
-        if (!status.enabled) {
-          return _LocationError(
-            message: 'Please enable location services',
-            onRetry: _retryLocationAccess,
-          );
-        }
-
-        switch (status.status) {
-          case LocationPermission.always:
-          case LocationPermission.whileInUse:
-            return const QiblahCompassWidget();
-          case LocationPermission.denied:
-            return _LocationError(
-              message: 'Location permission denied',
-              onRetry: _retryLocationAccess,
-            );
-          case LocationPermission.deniedForever:
-            return _LocationError(
-              message: 'Location permission permanently denied',
-              onRetry: _retryLocationAccess,
-            );
-          default:
-            return const SizedBox.shrink();
-        }
-      },
-    );
+    switch (status.status) {
+      case LocationPermission.always:
+      case LocationPermission.whileInUse:
+        return const QiblahCompassWidget();
+      case LocationPermission.denied:
+        return _LocationError(
+          message: 'Location permission denied. Select a city or grant permission.',
+          onRetry: _retryLocationAccess,
+        );
+      case LocationPermission.deniedForever:
+        return _LocationError(
+          message: 'Location permission permanently denied. Select a city in settings.',
+          onRetry: _retryLocationAccess,
+        );
+      default:
+        return _LocationError(
+          message: 'Location unavailable',
+          onRetry: _retryLocationAccess,
+        );
+    }
   }
 }
 
@@ -185,6 +199,9 @@ class QiblahCompassWidget extends StatefulWidget {
 
 class _QiblahCompassWidgetState extends State<QiblahCompassWidget> {
   bool _wasAligned = false;
+  bool _streamTimedOut = false;
+  StreamSubscription<QiblahDirection>? _subscription;
+  QiblahDirection? _direction;
   final _compassSvg = SvgPicture.asset('assets/compass.svg');
   final _needleSvg = SvgPicture.asset(
     'assets/needle.svg',
@@ -192,6 +209,38 @@ class _QiblahCompassWidgetState extends State<QiblahCompassWidget> {
     height: 280,
     alignment: Alignment.center,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription = FlutterQiblah.qiblahStream.listen(
+      (direction) {
+        if (!mounted) {
+          return;
+        }
+        setState(() => _direction = direction);
+      },
+      onError: (_) {
+        if (!mounted) {
+          return;
+        }
+        setState(() => _streamTimedOut = true);
+      },
+    );
+
+    Future<void>.delayed(const Duration(seconds: 8), () {
+      if (!mounted || _direction != null) {
+        return;
+      }
+      setState(() => _streamTimedOut = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
 
   void _handleAlignment(double offset) {
     final aligned =
@@ -204,78 +253,76 @@ class _QiblahCompassWidgetState extends State<QiblahCompassWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QiblahDirection>(
-      stream: FlutterQiblah.qiblahStream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    if (_streamTimedOut && _direction == null) {
+      return const SensorErrorWidget(
+        message:
+            'Compass data is unavailable. Try a physical device, set an emulator location, or select a city manually.',
+      );
+    }
 
-        final direction = snapshot.data;
-        if (direction == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final direction = _direction;
+    if (direction == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-        _handleAlignment(direction.offset);
-        final aligned =
-            direction.offset.abs() <= AppConstants.qiblahAlignmentThreshold;
-        final needsCalibration =
-            direction.offset.abs() >= AppConstants.qiblahCalibrationThreshold;
+    _handleAlignment(direction.offset);
+    final aligned =
+        direction.offset.abs() <= AppConstants.qiblahAlignmentThreshold;
+    final needsCalibration =
+        direction.offset.abs() >= AppConstants.qiblahCalibrationThreshold;
 
-        return Column(
-          children: [
-            if (needsCalibration) const CalibrationBanner(),
-            Expanded(
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: 300,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: aligned
-                              ? AppTheme.accentGreen
-                              : Colors.transparent,
-                          width: 4,
-                        ),
-                      ),
-                      child: Transform.rotate(
-                        angle: direction.direction * (pi / 180) * -1,
-                        child: _compassSvg,
-                      ),
-                    ),
-                    Transform.rotate(
-                      angle: direction.qiblah * (pi / 180) * -1,
-                      alignment: Alignment.center,
-                      child: _needleSvg,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    aligned ? 'Aligned with Qiblah' : 'Rotate to align',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: aligned ? AppTheme.primaryGreen : null,
-                      fontWeight: FontWeight.w600,
+    return Column(
+      children: [
+        if (needsCalibration) const CalibrationBanner(),
+        Expanded(
+          child: Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: aligned
+                          ? AppTheme.accentGreen
+                          : Colors.transparent,
+                      width: 4,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text('Offset: ${direction.offset.toStringAsFixed(1)}°'),
-                ],
-              ),
+                  child: Transform.rotate(
+                    angle: direction.direction * (pi / 180) * -1,
+                    child: _compassSvg,
+                  ),
+                ),
+                Transform.rotate(
+                  angle: direction.qiblah * (pi / 180) * -1,
+                  alignment: Alignment.center,
+                  child: _needleSvg,
+                ),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text(
+                aligned ? 'Aligned with Qiblah' : 'Rotate to align',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: aligned ? AppTheme.primaryGreen : null,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text('Offset: ${direction.offset.toStringAsFixed(1)}°'),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

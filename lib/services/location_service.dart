@@ -78,27 +78,49 @@ class LocationService {
       return null;
     }
 
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.low,
-        timeLimit: Duration(seconds: 10),
-      ),
-    );
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
 
-    const cityName = 'Current Location';
-    await _preferences.saveLocation(
-      latitude: position.latitude,
-      longitude: position.longitude,
-      cityName: cityName,
-      source: LocationSource.gps,
-    );
+      const cityName = 'Current Location';
+      await _preferences.saveLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        cityName: cityName,
+        source: LocationSource.gps,
+      );
 
-    return AppLocation(
-      latitude: position.latitude,
-      longitude: position.longitude,
-      cityName: cityName,
-      source: LocationSource.gps,
-    );
+      return AppLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        cityName: cityName,
+        source: LocationSource.gps,
+      );
+    } catch (_) {
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (lastKnown == null) {
+        return null;
+      }
+
+      const cityName = 'Current Location';
+      await _preferences.saveLocation(
+        latitude: lastKnown.latitude,
+        longitude: lastKnown.longitude,
+        cityName: cityName,
+        source: LocationSource.gps,
+      );
+
+      return AppLocation(
+        latitude: lastKnown.latitude,
+        longitude: lastKnown.longitude,
+        cityName: cityName,
+        source: LocationSource.gps,
+      );
+    }
   }
 
   Future<AppLocation> saveManualCity(City city) async {

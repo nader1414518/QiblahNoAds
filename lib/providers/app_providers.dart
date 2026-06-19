@@ -86,42 +86,58 @@ class LocationNotifier extends StateNotifier<LocationState> {
 
     state = state.copyWith(isLoading: true, error: null);
 
-    final saved = await _locationService.getSavedLocation();
-    if (saved != null) {
-      state = state.copyWith(location: saved, isLoading: false);
-      return;
-    }
+    try {
+      final saved = await _locationService.getSavedLocation();
+      if (saved != null) {
+        state = state.copyWith(location: saved, isLoading: false);
+        return;
+      }
 
-    final gps = await _locationService.fetchGpsLocation();
-    if (gps != null) {
-      state = state.copyWith(location: gps, isLoading: false);
-      return;
-    }
+      final gps = await _locationService.fetchGpsLocation();
+      if (gps != null) {
+        state = state.copyWith(location: gps, isLoading: false);
+        return;
+      }
 
-    state = state.copyWith(
-      isLoading: false,
-      needsManualSelection: true,
-      error: 'Location permission required. Please select a city.',
-    );
+      state = state.copyWith(
+        isLoading: false,
+        needsManualSelection: true,
+        error: 'Location unavailable. Please select a city.',
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        needsManualSelection: true,
+        error: 'Location unavailable. Please select a city.',
+      );
+    }
   }
 
   Future<void> refreshGps() async {
     state = state.copyWith(isLoading: true, error: null);
-    final gps = await _locationService.fetchGpsLocation();
-    if (gps != null) {
-      state = state.copyWith(
-        location: gps,
-        isLoading: false,
-        needsManualSelection: false,
-      );
-      return;
-    }
+    try {
+      final gps = await _locationService.fetchGpsLocation();
+      if (gps != null) {
+        state = state.copyWith(
+          location: gps,
+          isLoading: false,
+          needsManualSelection: false,
+        );
+        return;
+      }
 
-    state = state.copyWith(
-      isLoading: false,
-      needsManualSelection: true,
-      error: 'Unable to get GPS location.',
-    );
+      state = state.copyWith(
+        isLoading: false,
+        needsManualSelection: true,
+        error: 'Unable to get GPS location. Please select a city.',
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        needsManualSelection: true,
+        error: 'Unable to get GPS location. Please select a city.',
+      );
+    }
   }
 
   Future<void> selectCity(City city) async {
