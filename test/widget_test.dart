@@ -1,30 +1,69 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:qiblah_no_ads/main.dart';
+import 'package:qiblah_no_ads/core/models/enums.dart';
+import 'package:qiblah_no_ads/features/shell/main_shell.dart';
+import 'package:qiblah_no_ads/providers/app_providers.dart';
+import 'package:qiblah_no_ads/services/notification_service.dart';
+import 'package:qiblah_no_ads/services/preferences_service.dart';
+import 'package:qiblah_no_ads/services/prayer_calculation_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  test('calculates five daily prayers and sunrise', () {
+    final service = PrayerCalculationService();
+    final daily = service.calculateForDate(
+      latitude: 21.4225,
+      longitude: 39.8262,
+      date: DateTime(2025, 6, 19),
+      methodId: CalculationMethodId.muslimWorldLeague,
+      madhabId: MadhabId.shafi,
+    );
+
+    expect(daily.times.length, 6);
+    expect(daily.times[PrayerName.fajr], isNotNull);
+    expect(daily.times[PrayerName.isha], isNotNull);
+    expect(
+      daily.times[PrayerName.fajr]!.isBefore(daily.times[PrayerName.sunrise]!),
+      isTrue,
+    );
+  });
+
+  testWidgets('App shell shows three navigation tabs', (WidgetTester tester) async {
+    final preferences = await PreferencesService.create();
+    await preferences.saveLocation(
+      latitude: 21.4225,
+      longitude: 39.8262,
+      cityName: 'Makkah, Saudi Arabia',
+      source: LocationSource.manual,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          preferencesServiceProvider.overrideWithValue(preferences),
+          notificationServiceProvider.overrideWithValue(
+            NotificationService(preferences),
+          ),
+        ],
+        child: const MaterialApp(
+          home: MainShell(initialIndex: 2),
+        ),
+      ),
+    );
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.text('Qiblah'), findsOneWidget);
+    expect(find.text('Prayer Times'), findsOneWidget);
+    expect(find.text('Azkar'), findsWidgets);
   });
 }

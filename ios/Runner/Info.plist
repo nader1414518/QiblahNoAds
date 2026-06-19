@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is used to calculate accurate Qiblah direction and local prayer times. Your location is never sent to external servers.</string>
 </dict>
 </plist>

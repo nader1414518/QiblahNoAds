@@ -1,0 +1,143 @@
+{
+  "morning": [
+    {
+      "arabic": "أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ",
+      "english": "I seek refuge in Allah from Satan, the accursed.",
+      "repeat": 1
+    },
+    {
+      "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+      "english": "In the name of Allah, the Most Gracious, the Most Merciful.",
+      "repeat": 1
+    },
+    {
+      "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ",
+      "english": "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep.",
+      "repeat": 1
+    },
+    {
+      "arabic": "سُبْحَانَ اللَّهِ",
+      "english": "Glory be to Allah.",
+      "repeat": 33
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ",
+      "english": "All praise is due to Allah.",
+      "repeat": 33
+    },
+    {
+      "arabic": "اللَّهُ أَكْبَرُ",
+      "english": "Allah is the Greatest.",
+      "repeat": 34
+    },
+    {
+      "arabic": "لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+      "english": "There is no god but Allah alone, with no partner. His is the dominion and His is the praise, and He is over all things competent.",
+      "repeat": 1
+    },
+    {
+      "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
+      "english": "We have entered morning and the dominion belongs to Allah. All praise is for Allah. There is no god but Allah alone, with no partner.",
+      "repeat": 1
+    },
+    {
+      "arabic": "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ",
+      "english": "O Allah, by You we enter the morning, by You we enter the evening, by You we live, by You we die, and to You is the resurrection.",
+      "repeat": 1
+    },
+    {
+      "arabic": "حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+      "english": "Allah is sufficient for me. There is no deity except Him. Upon Him I rely, and He is the Lord of the Great Throne.",
+      "repeat": 7
+    }
+  ],
+  "evening": [
+    {
+      "arabic": "أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ",
+      "english": "I seek refuge in Allah from Satan, the accursed.",
+      "repeat": 1
+    },
+    {
+      "arabic": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
+      "english": "We have entered evening and the dominion belongs to Allah. All praise is for Allah. There is no god but Allah alone, with no partner.",
+      "repeat": 1
+    },
+    {
+      "arabic": "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ",
+      "english": "O Allah, by You we enter the evening, by You we enter the morning, by You we live, by You we die, and to You is the return.",
+      "repeat": 1
+    },
+    {
+      "arabic": "سُبْحَانَ اللَّهِ",
+      "english": "Glory be to Allah.",
+      "repeat": 33
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ",
+      "english": "All praise is due to Allah.",
+      "repeat": 33
+    },
+    {
+      "arabic": "اللَّهُ أَكْبَرُ",
+      "english": "Allah is the Greatest.",
+      "repeat": 34
+    },
+    {
+      "arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+      "english": "I seek refuge in the perfect words of Allah from the evil of what He has created.",
+      "repeat": 3
+    },
+    {
+      "arabic": "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+      "english": "In the name of Allah, with whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing.",
+      "repeat": 3
+    },
+    {
+      "arabic": "حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+      "english": "Allah is sufficient for me. There is no deity except Him. Upon Him I rely, and He is the Lord of the Great Throne.",
+      "repeat": 7
+    }
+  ],
+  "post_prayer": [
+    {
+      "arabic": "أَسْتَغْفِرُ اللَّهَ",
+      "english": "I seek forgiveness from Allah.",
+      "repeat": 3
+    },
+    {
+      "arabic": "اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",
+      "english": "O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of majesty and honor.",
+      "repeat": 1
+    },
+    {
+      "arabic": "سُبْحَانَ اللَّهِ",
+      "english": "Glory be to Allah.",
+      "repeat": 33
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ",
+      "english": "All praise is due to Allah.",
+      "repeat": 33
+    },
+    {
+      "arabic": "اللَّهُ أَكْبَرُ",
+      "english": "Allah is the Greatest.",
+      "repeat": 33
+    },
+    {
+      "arabic": "لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+      "english": "There is no god but Allah alone, with no partner. His is the dominion and His is the praise, and He is over all things competent.",
+      "repeat": 1
+    },
+    {
+      "arabic": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+      "english": "There is no power and no strength except with Allah.",
+      "repeat": 1
+    },
+    {
+      "arabic": "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ",
+      "english": "O Allah, send blessings upon Muhammad and upon the family of Muhammad.",
+      "repeat": 1
+    }
+  ]
+}
