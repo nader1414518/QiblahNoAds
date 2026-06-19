@@ -6,11 +6,11 @@ import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/utils/date_formatters.dart';
 import '../../core/widgets/safe_area_widgets.dart';
+import '../../core/widgets/settings_button.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/prayer_calculation_service.dart';
 import '../../providers/app_providers.dart';
 import '../location/manual_city_picker.dart';
-import 'settings/prayer_settings_sheet.dart';
 import 'widgets/prayer_widgets.dart';
 
 class PrayerTimesScreen extends ConsumerStatefulWidget {
@@ -79,12 +79,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.prayerTimesTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => showPrayerSettingsSheet(context),
-          ),
-        ],
+        actions: const [SettingsIconButton()],
       ),
       body: SafeScreenBody(
         bottom: false,

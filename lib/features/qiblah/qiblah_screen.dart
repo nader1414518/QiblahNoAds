@@ -14,6 +14,7 @@ import '../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import '../../services/qiblah_bearing.dart';
 import '../../core/widgets/safe_area_widgets.dart';
+import '../../core/widgets/settings_button.dart';
 import '../location/manual_city_picker.dart';
 import 'widgets/calibration_banner.dart';
 import 'widgets/qiblah_compass_face.dart';
@@ -81,6 +82,7 @@ class QiblahScreen extends ConsumerWidget {
               );
             },
           ),
+          const SettingsIconButton(),
         ],
       ),
       body: SafeScreenBody(

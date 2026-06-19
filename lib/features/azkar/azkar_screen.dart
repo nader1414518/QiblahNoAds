@@ -6,6 +6,7 @@ import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/widgets/premium_widgets.dart';
 import '../../core/widgets/safe_area_widgets.dart';
+import '../../core/widgets/settings_button.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/azkar_service.dart';
 import 'tasbih_screen.dart';
@@ -60,6 +61,7 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.azkarTitle),
+        actions: const [SettingsIconButton()],
         bottom: TabBar(
           controller: _tabController,
           tabs: categories
