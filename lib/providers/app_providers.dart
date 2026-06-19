@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/l10n/l10n_extensions.dart';
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
 import '../services/location_service.dart';
@@ -46,6 +48,10 @@ final calculationMethodProvider =
 
 final madhabProvider = StateProvider<MadhabId>((ref) {
   return ref.watch(preferencesServiceProvider).getMadhab();
+});
+
+final localeProvider = StateProvider<Locale?>((ref) {
+  return ref.watch(preferencesServiceProvider).getLocale();
 });
 
 class LocationState {

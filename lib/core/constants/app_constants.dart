@@ -16,6 +16,7 @@ class AppConstants {
   static const String prefNotificationPrefix = 'notification_';
   static const String prefUse24Hour = 'use_24_hour';
   static const String prefAdjustmentPrefix = 'adjustment_';
+  static const String prefLocale = 'app_locale';
 
   static const int notificationIdFajr = 1;
   static const int notificationIdDhuhr = 2;

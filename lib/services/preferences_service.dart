@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/constants/app_constants.dart';
@@ -135,5 +136,24 @@ class PreferencesService {
 
   Future<void> resetTasbihCount() async {
     await _prefs.remove(AppConstants.prefTasbihCount);
+  }
+
+  Locale? getLocale() {
+    final value = _prefs.getString(AppConstants.prefLocale);
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    final parts = value.split('_');
+    if (parts.length == 2) {
+      return Locale(parts[0], parts[1]);
+    }
+    return Locale(parts[0]);
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    final tag = locale.countryCode == null || locale.countryCode!.isEmpty
+        ? locale.languageCode
+        : '${locale.languageCode}_${locale.countryCode}';
+    await _prefs.setString(AppConstants.prefLocale, tag);
   }
 }
