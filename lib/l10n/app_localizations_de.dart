@@ -305,4 +305,52 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get langGerman => 'Deutsch';
+
+  @override
+  String get langSpanish => 'Español';
+
+  @override
+  String get langMalay => 'Bahasa Melayu';
+
+  @override
+  String get langPersian => 'فارسی';
+
+  @override
+  String get langHindi => 'हिन्दी';
+
+  @override
+  String get langRussian => 'Русский';
+
+  @override
+  String get langItalian => 'Italiano';
+
+  @override
+  String get langDutch => 'Nederlands';
+
+  @override
+  String get langSwahili => 'Kiswahili';
+
+  @override
+  String get langPortuguese => 'Português';
+
+  @override
+  String get langMalayalam => 'മലയാളം';
+
+  @override
+  String get langTamil => 'தமிழ்';
+
+  @override
+  String get langPunjabi => 'ਪੰਜਾਬੀ';
+
+  @override
+  String get langSomali => 'Soomaali';
+
+  @override
+  String get langUzbek => 'O\'zbek';
+
+  @override
+  String get langKazakh => 'Қазақша';
+
+  @override
+  String get langChinese => '中文';
 }

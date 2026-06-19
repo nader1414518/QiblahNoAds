@@ -4,21 +4,21 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for Indonesian (`id`).
-class AppLocalizationsId extends AppLocalizations {
-  AppLocalizationsId([String locale = 'id']) : super(locale);
+/// The translations for Malay (`ms`).
+class AppLocalizationsMs extends AppLocalizations {
+  AppLocalizationsMs([String locale = 'ms']) : super(locale);
 
   @override
-  String get appTitle => 'Al-Qiblah & Pendamping Shalat';
+  String get appTitle => 'Al-Qiblah & Teman Solat';
 
   @override
   String get navQiblah => 'Kiblat';
 
   @override
-  String get navPrayerTimes => 'Waktu Shalat';
+  String get navPrayerTimes => 'Waktu Solat';
 
   @override
-  String get navAzkar => 'Dzikir';
+  String get navAzkar => 'Zikir';
 
   @override
   String get close => 'Tutup';
@@ -27,72 +27,72 @@ class AppLocalizationsId extends AppLocalizations {
   String get cancel => 'Batal';
 
   @override
-  String get reset => 'Atur ulang';
+  String get reset => 'Set semula';
 
   @override
-  String get retry => 'Coba lagi';
+  String get retry => 'Cuba lagi';
 
   @override
   String get done => 'Selesai';
 
   @override
-  String get showMore => 'Tampilkan lebih banyak';
+  String get showMore => 'Tunjuk lebih';
 
   @override
-  String get showLess => 'Tampilkan lebih sedikit';
+  String get showLess => 'Tunjuk kurang';
 
   @override
   String get qiblahTitle => 'Kiblat';
 
   @override
-  String get useCurrentLocation => 'Gunakan lokasi saat ini';
+  String get useCurrentLocation => 'Guna lokasi semasa';
 
   @override
-  String get changeCity => 'Ganti kota';
+  String get changeCity => 'Tukar bandar';
 
   @override
-  String get currentLocationSaved => 'Lokasi saat ini disimpan';
+  String get currentLocationSaved => 'Lokasi semasa disimpan';
 
   @override
   String get unableToGetGps =>
-      'Tidak dapat mendapatkan GPS. Coba pilih kota sebagai gantinya.';
+      'Tidak dapat mendapatkan GPS. Cuba pilih bandar.';
 
   @override
   String get locationStatusUnavailable => 'Tidak dapat membaca status lokasi';
 
   @override
-  String get locationEnableServices => 'Harap aktifkan layanan lokasi';
+  String get locationEnableServices => 'Sila aktifkan perkhidmatan lokasi';
 
   @override
   String get locationEnableOrSelectCity =>
-      'Harap aktifkan layanan lokasi atau pilih kota';
+      'Sila aktifkan perkhidmatan lokasi atau pilih bandar';
 
   @override
   String get locationUnavailableSelectCity =>
-      'Lokasi tidak tersedia. Pilih kota atau berikan izin.';
+      'Lokasi tidak tersedia. Pilih bandar atau berikan kebenaran.';
 
   @override
   String get locationPermissionDenied =>
-      'Izin lokasi ditolak. Pilih kota atau berikan izin.';
+      'Kebenaran lokasi ditolak. Pilih bandar atau berikan kebenaran.';
 
   @override
   String get locationPermissionDeniedForever =>
-      'Izin lokasi ditolak permanen. Pilih kota di pengaturan.';
+      'Kebenaran lokasi ditolak secara kekal. Pilih bandar dalam tetapan.';
 
   @override
   String get locationUnavailable => 'Lokasi tidak tersedia';
 
   @override
   String get sensorUnavailable =>
-      'Perangkat ini tidak memiliki sensor kompas. Arah kiblat tidak dapat ditampilkan.';
+      'Peranti ini tiada sensor kompas. Arah kiblat tidak dapat dipaparkan.';
 
   @override
   String get compassUnavailable =>
-      'Data kompas tidak tersedia. Coba perangkat fisik, atur lokasi emulator, atau pilih kota secara manual.';
+      'Data kompas tidak tersedia. Cuba peranti fizikal, tetapkan lokasi emulater, atau pilih bandar secara manual.';
 
   @override
   String get calibrationHint =>
-      'Gerakkan ponsel Anda membentuk angka 8 untuk meningkatkan akurasi kompas.';
+      'Gerakkan telefon anda membentuk angka 8 untuk meningkatkan ketepatan kompas.';
 
   @override
   String get facingQiblah => 'Menghadap Kiblat';
@@ -108,64 +108,63 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get prayerTimesTitle => 'Waktu Shalat';
+  String get prayerTimesTitle => 'Waktu Solat';
 
   @override
-  String get settings => 'Pengaturan';
+  String get settings => 'Tetapan';
 
   @override
-  String get todaysSchedule => 'Jadwal Hari Ini';
+  String get todaysSchedule => 'Jadual Hari Ini';
 
   @override
-  String get nextPrayer => 'Shalat Berikutnya';
+  String get nextPrayer => 'Solat Seterusnya';
 
   @override
-  String get locationNotSet => 'Lokasi belum diatur';
+  String get locationNotSet => 'Lokasi belum ditetapkan';
 
   @override
-  String get failedToLoadPrayerTimes => 'Gagal memuat waktu shalat';
+  String get failedToLoadPrayerTimes => 'Gagal memuatkan waktu solat';
 
   @override
-  String get unableToCalculatePrayerTimes =>
-      'Tidak dapat menghitung waktu shalat';
+  String get unableToCalculatePrayerTimes => 'Tidak dapat mengira waktu solat';
 
   @override
-  String get selectCity => 'Pilih Kota';
+  String get selectCity => 'Pilih Bandar';
 
   @override
-  String get searchCityHint => 'Cari kota atau negara';
+  String get searchCityHint => 'Cari bandar atau negara';
 
   @override
-  String get calculationMethod => 'Metode Perhitungan';
+  String get calculationMethod => 'Kaedah Pengiraan';
 
   @override
   String get calculationMethodSubtitle =>
-      'Sesuaikan dengan otoritas masjid lokal Anda';
+      'Selaraskan dengan pihak berkuasa masjid tempatan anda';
 
   @override
-  String get madhab => 'Mazhab (waktu Ashar)';
+  String get madhab => 'Mazhab (waktu Asar)';
 
   @override
-  String get fineTune => 'Penyesuaian halus (menit)';
+  String get fineTune => 'Penalaan halus (minit)';
 
   @override
   String get fineTuneSubtitle =>
-      'Sesuaikan agar cocok dengan jadwal masjid lokal Anda';
+      'Laraskan agar sepadan dengan jadual masjid tempatan anda';
 
   @override
-  String get use24Hour => 'Format waktu 24 jam';
+  String get use24Hour => 'Format masa 24 jam';
 
   @override
-  String get notifications => 'Notifikasi';
+  String get notifications => 'Pemberitahuan';
 
   @override
-  String get refreshGps => 'Segarkan lokasi GPS';
+  String get refreshGps => 'Muat semula lokasi GPS';
 
   @override
   String get language => 'Bahasa';
 
   @override
-  String get languageSubtitle => 'Pilih bahasa tampilan aplikasi';
+  String get languageSubtitle => 'Pilih bahasa paparan aplikasi';
 
   @override
   String get methodMuslimWorldLeague => 'Liga Muslim Dunia';
@@ -177,10 +176,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get methodUmmAlQura => 'Umm al-Qura';
 
   @override
-  String get methodEgyptian => 'Otoritas Umum Mesir';
+  String get methodEgyptian => 'Pihak Berkuasa Am Mesir';
 
   @override
-  String get methodKarachi => 'Universitas Karachi';
+  String get methodKarachi => 'Universiti Karachi';
 
   @override
   String get madhabShafi => 'Syafi\'i';
@@ -192,22 +191,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get prayerFajr => 'Subuh';
 
   @override
-  String get prayerSunrise => 'Terbit';
+  String get prayerSunrise => 'Syuruk';
 
   @override
-  String get prayerDhuhr => 'Dzuhur';
+  String get prayerDhuhr => 'Zohor';
 
   @override
-  String get prayerAsr => 'Ashar';
+  String get prayerAsr => 'Asar';
 
   @override
   String get prayerMaghrib => 'Maghrib';
 
   @override
-  String get prayerIsha => 'Isya';
+  String get prayerIsha => 'Isyak';
 
   @override
-  String get azkarTitle => 'Dzikir';
+  String get azkarTitle => 'Zikir';
 
   @override
   String get tasbih => 'Tasbih';
@@ -219,23 +218,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get categoryEvening => 'Petang';
 
   @override
-  String get categoryPostPrayer => 'Setelah Shalat';
+  String get categoryPostPrayer => 'Selepas Solat';
 
   @override
-  String get morningDescription => 'Dzikir pagi setelah Subuh — Hisn al-Muslim';
+  String get morningDescription => 'Zikir pagi selepas Subuh — Hisn al-Muslim';
 
   @override
-  String get eveningDescription =>
-      'Dzikir petang setelah Ashar — Hisn al-Muslim';
+  String get eveningDescription => 'Zikir petang selepas Asar — Hisn al-Muslim';
 
   @override
-  String get postPrayerDescription => 'Dzikir setelah setiap shalat wajib';
+  String get postPrayerDescription => 'Zikir selepas setiap solat fardhu';
 
   @override
-  String get tapToCount => 'Ketuk kartu untuk menghitung pengulangan';
+  String get tapToCount => 'Ketik kad untuk kira ulangan';
 
   @override
-  String get referenceQuran => 'Al-Qur\'an';
+  String get referenceQuran => 'Al-Quran';
 
   @override
   String get referenceHadith => 'Hadis';
@@ -247,7 +245,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get narrator => 'Perawi';
 
   @override
-  String get grade => 'Derajat';
+  String get grade => 'Darjah';
 
   @override
   String hisnNumber(int number) {
@@ -258,24 +256,24 @@ class AppLocalizationsId extends AppLocalizations {
   String get tasbihTitle => 'Penghitung Tasbih';
 
   @override
-  String get tapToCountTasbih => 'Ketuk di mana saja untuk menghitung';
+  String get tapToCountTasbih => 'Ketik di mana-mana untuk kira';
 
   @override
-  String get tasbihMilestones => 'Tonggak pada 33 dan 100';
+  String get tasbihMilestones => 'Pencapaian pada 33 dan 100';
 
   @override
-  String get resetCounterTitle => 'Atur ulang penghitung?';
+  String get resetCounterTitle => 'Set semula penghitung?';
 
   @override
   String get resetCounterMessage =>
-      'Ini akan menghapus jumlah sesi tasbih Anda saat ini.';
+      'Ini akan memadamkan kiraan sesi tasbih semasa anda.';
 
   @override
-  String get notificationPrayerTitle => 'Waktu Shalat';
+  String get notificationPrayerTitle => 'Waktu Solat';
 
   @override
   String notificationPrayerBody(String prayer) {
-    return 'Waktunya $prayer';
+    return 'Sudah tiba waktu $prayer';
   }
 
   @override

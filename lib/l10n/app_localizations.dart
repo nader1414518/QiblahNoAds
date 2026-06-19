@@ -9,10 +9,26 @@ import 'app_localizations_ar.dart';
 import 'app_localizations_bn.dart';
 import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fa.dart';
 import 'app_localizations_fr.dart';
+import 'app_localizations_hi.dart';
 import 'app_localizations_id.dart';
+import 'app_localizations_it.dart';
+import 'app_localizations_kk.dart';
+import 'app_localizations_ml.dart';
+import 'app_localizations_ms.dart';
+import 'app_localizations_nl.dart';
+import 'app_localizations_pa.dart';
+import 'app_localizations_pt.dart';
+import 'app_localizations_ru.dart';
+import 'app_localizations_so.dart';
+import 'app_localizations_sw.dart';
+import 'app_localizations_ta.dart';
 import 'app_localizations_tr.dart';
 import 'app_localizations_ur.dart';
+import 'app_localizations_uz.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -104,10 +120,26 @@ abstract class AppLocalizations {
     Locale('bn'),
     Locale('de'),
     Locale('en'),
+    Locale('es'),
+    Locale('fa'),
     Locale('fr'),
+    Locale('hi'),
     Locale('id'),
+    Locale('it'),
+    Locale('kk'),
+    Locale('ml'),
+    Locale('ms'),
+    Locale('nl'),
+    Locale('pa'),
+    Locale('pt'),
+    Locale('ru'),
+    Locale('so'),
+    Locale('sw'),
+    Locale('ta'),
     Locale('tr'),
     Locale('ur'),
+    Locale('uz'),
+    Locale('zh'),
   ];
 
   /// No description provided for @appTitle.
@@ -655,6 +687,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deutsch'**
   String get langGerman;
+
+  /// No description provided for @langSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Español'**
+  String get langSpanish;
+
+  /// No description provided for @langMalay.
+  ///
+  /// In en, this message translates to:
+  /// **'Bahasa Melayu'**
+  String get langMalay;
+
+  /// No description provided for @langPersian.
+  ///
+  /// In en, this message translates to:
+  /// **'فارسی'**
+  String get langPersian;
+
+  /// No description provided for @langHindi.
+  ///
+  /// In en, this message translates to:
+  /// **'हिन्दी'**
+  String get langHindi;
+
+  /// No description provided for @langRussian.
+  ///
+  /// In en, this message translates to:
+  /// **'Русский'**
+  String get langRussian;
+
+  /// No description provided for @langItalian.
+  ///
+  /// In en, this message translates to:
+  /// **'Italiano'**
+  String get langItalian;
+
+  /// No description provided for @langDutch.
+  ///
+  /// In en, this message translates to:
+  /// **'Nederlands'**
+  String get langDutch;
+
+  /// No description provided for @langSwahili.
+  ///
+  /// In en, this message translates to:
+  /// **'Kiswahili'**
+  String get langSwahili;
+
+  /// No description provided for @langPortuguese.
+  ///
+  /// In en, this message translates to:
+  /// **'Português'**
+  String get langPortuguese;
+
+  /// No description provided for @langMalayalam.
+  ///
+  /// In en, this message translates to:
+  /// **'മലയാളം'**
+  String get langMalayalam;
+
+  /// No description provided for @langTamil.
+  ///
+  /// In en, this message translates to:
+  /// **'தமிழ்'**
+  String get langTamil;
+
+  /// No description provided for @langPunjabi.
+  ///
+  /// In en, this message translates to:
+  /// **'ਪੰਜਾਬੀ'**
+  String get langPunjabi;
+
+  /// No description provided for @langSomali.
+  ///
+  /// In en, this message translates to:
+  /// **'Soomaali'**
+  String get langSomali;
+
+  /// No description provided for @langUzbek.
+  ///
+  /// In en, this message translates to:
+  /// **'O\'zbek'**
+  String get langUzbek;
+
+  /// No description provided for @langKazakh.
+  ///
+  /// In en, this message translates to:
+  /// **'Қазақша'**
+  String get langKazakh;
+
+  /// No description provided for @langChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'中文'**
+  String get langChinese;
 }
 
 class _AppLocalizationsDelegate
@@ -672,10 +800,26 @@ class _AppLocalizationsDelegate
     'bn',
     'de',
     'en',
+    'es',
+    'fa',
     'fr',
+    'hi',
     'id',
+    'it',
+    'kk',
+    'ml',
+    'ms',
+    'nl',
+    'pa',
+    'pt',
+    'ru',
+    'so',
+    'sw',
+    'ta',
     'tr',
     'ur',
+    'uz',
+    'zh',
   ].contains(locale.languageCode);
 
   @override
@@ -693,14 +837,46 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fa':
+      return AppLocalizationsFa();
     case 'fr':
       return AppLocalizationsFr();
+    case 'hi':
+      return AppLocalizationsHi();
     case 'id':
       return AppLocalizationsId();
+    case 'it':
+      return AppLocalizationsIt();
+    case 'kk':
+      return AppLocalizationsKk();
+    case 'ml':
+      return AppLocalizationsMl();
+    case 'ms':
+      return AppLocalizationsMs();
+    case 'nl':
+      return AppLocalizationsNl();
+    case 'pa':
+      return AppLocalizationsPa();
+    case 'pt':
+      return AppLocalizationsPt();
+    case 'ru':
+      return AppLocalizationsRu();
+    case 'so':
+      return AppLocalizationsSo();
+    case 'sw':
+      return AppLocalizationsSw();
+    case 'ta':
+      return AppLocalizationsTa();
     case 'tr':
       return AppLocalizationsTr();
     case 'ur':
       return AppLocalizationsUr();
+    case 'uz':
+      return AppLocalizationsUz();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(

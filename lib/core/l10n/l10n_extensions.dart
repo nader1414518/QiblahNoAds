@@ -71,18 +71,50 @@ extension AppLocalizationsX on AppLocalizations {
     switch (locale.languageCode) {
       case 'ar':
         return langArabic;
-      case 'fr':
-        return langFrench;
-      case 'ur':
-        return langUrdu;
-      case 'tr':
-        return langTurkish;
-      case 'id':
-        return langIndonesian;
       case 'bn':
         return langBengali;
       case 'de':
         return langGerman;
+      case 'es':
+        return langSpanish;
+      case 'fa':
+        return langPersian;
+      case 'fr':
+        return langFrench;
+      case 'hi':
+        return langHindi;
+      case 'id':
+        return langIndonesian;
+      case 'it':
+        return langItalian;
+      case 'kk':
+        return langKazakh;
+      case 'ml':
+        return langMalayalam;
+      case 'ms':
+        return langMalay;
+      case 'nl':
+        return langDutch;
+      case 'pa':
+        return langPunjabi;
+      case 'pt':
+        return langPortuguese;
+      case 'ru':
+        return langRussian;
+      case 'so':
+        return langSomali;
+      case 'sw':
+        return langSwahili;
+      case 'ta':
+        return langTamil;
+      case 'tr':
+        return langTurkish;
+      case 'ur':
+        return langUrdu;
+      case 'uz':
+        return langUzbek;
+      case 'zh':
+        return langChinese;
       default:
         return langEnglish;
     }
@@ -117,12 +149,28 @@ extension AppLocalizationsX on AppLocalizations {
 const supportedAppLocales = [
   Locale('en'),
   Locale('ar'),
-  Locale('fr'),
   Locale('ur'),
-  Locale('tr'),
+  Locale('fa'),
   Locale('id'),
+  Locale('ms'),
   Locale('bn'),
+  Locale('hi'),
+  Locale('ml'),
+  Locale('ta'),
+  Locale('pa'),
+  Locale('tr'),
+  Locale('uz'),
+  Locale('kk'),
+  Locale('so'),
+  Locale('sw'),
+  Locale('fr'),
+  Locale('es'),
+  Locale('pt'),
   Locale('de'),
+  Locale('it'),
+  Locale('nl'),
+  Locale('ru'),
+  Locale('zh'),
 ];
 
 /// The device's current locale from the platform dispatcher.

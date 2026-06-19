@@ -129,7 +129,11 @@ void main() {
   test('resolveSupportedLocale maps to supported languages', () {
     expect(resolveSupportedLocale(const Locale('ar', 'SA')), const Locale('ar'));
     expect(resolveSupportedLocale(const Locale('ur', 'PK')), const Locale('ur'));
-    expect(resolveSupportedLocale(const Locale('es', 'ES')), const Locale('en'));
+    expect(resolveSupportedLocale(const Locale('es', 'ES')), const Locale('es'));
+    expect(resolveSupportedLocale(const Locale('fa', 'IR')), const Locale('fa'));
+    expect(resolveSupportedLocale(const Locale('pt', 'BR')), const Locale('pt'));
+    expect(resolveSupportedLocale(const Locale('zh', 'CN')), const Locale('zh'));
+    expect(resolveSupportedLocale(const Locale('xx')), const Locale('en'));
     expect(resolveSupportedLocale(null), const Locale('en'));
   });
 
