@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/l10n/l10n_extensions.dart';
 import '../../core/models/models.dart';
 import '../../core/widgets/safe_area_widgets.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/app_providers.dart';
 
 class ManualCityPicker extends ConsumerStatefulWidget {
   const ManualCityPicker({
     super.key,
-    this.message,
+    this.errorCode,
     this.onSelected,
     this.bottomSafeArea = true,
   });
 
-  final String? message;
+  final String? errorCode;
   final VoidCallback? onSelected;
   final bool bottomSafeArea;
 
@@ -68,19 +70,22 @@ class _ManualCityPickerState extends ConsumerState<ManualCityPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final message = l10n.locationErrorMessage(widget.errorCode);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select City'),
+        title: Text(l10n.selectCity),
       ),
       body: SafeScreenBody(
         bottom: widget.bottomSafeArea,
         child: Column(
           children: [
-            if (widget.message != null)
+            if (message != null)
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  widget.message!,
+                  message,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -88,10 +93,10 @@ class _ManualCityPickerState extends ConsumerState<ManualCityPicker> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
                 controller: _searchController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Search city or country',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: l10n.searchCityHint,
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ),

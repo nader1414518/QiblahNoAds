@@ -87,6 +87,30 @@ extension AppLocalizationsX on AppLocalizations {
         return langEnglish;
     }
   }
+
+  String? locationErrorMessage(String? code) {
+    switch (code) {
+      case 'location_unavailable_select_city':
+        return locationUnavailableSelectCity;
+      case 'unable_to_get_gps':
+        return unableToGetGps;
+      default:
+        return null;
+    }
+  }
+
+  String? prayerTimesErrorMessage(String? code) {
+    switch (code) {
+      case 'location_not_set':
+        return locationNotSet;
+      case 'unable_to_calculate':
+        return unableToCalculatePrayerTimes;
+      case 'failed_to_load':
+        return failedToLoadPrayerTimes;
+      default:
+        return null;
+    }
+  }
 }
 
 /// Supported app locales in display order.

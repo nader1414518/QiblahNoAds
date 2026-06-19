@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+
 /// Scaffold body when an [AppBar] handles the top inset.
 class SafeScreenBody extends StatelessWidget {
   const SafeScreenBody({
@@ -87,9 +89,10 @@ class ModalCloseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return IconButton(
       icon: const Icon(Icons.close),
-      tooltip: 'Close',
+      tooltip: l10n.close,
       onPressed: onPressed ?? () => Navigator.maybePop(context),
     );
   }

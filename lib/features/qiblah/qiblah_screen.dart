@@ -6,6 +6,7 @@ import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/constants/app_constants.dart';
@@ -31,18 +32,19 @@ class QiblahScreen extends ConsumerWidget {
 
     final location = ref.read(locationProvider).location;
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
     if (location?.source == LocationSource.gps) {
       messenger.showSnackBar(
         SnackBar(
-          content: const Text('Current location saved'),
+          content: Text(l10n.currentLocationSaved),
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.emeraldPrimary,
         ),
       );
     } else {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Unable to get GPS. Try selecting a city instead.'),
+        SnackBar(
+          content: Text(l10n.unableToGetGps),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -53,18 +55,20 @@ class QiblahScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = ref.watch(locationProvider.select((state) => state.location));
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Qiblah'),
+        title: Text(l10n.qiblahTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.my_location),
-            tooltip: 'Use current location',
+            tooltip: l10n.useCurrentLocation,
             onPressed: () => _useCurrentLocation(context, ref),
           ),
           IconButton(
             icon: const Icon(Icons.location_city_outlined),
-            tooltip: 'Change city',
+            tooltip: l10n.changeCity,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
@@ -146,21 +150,20 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (_isInitializing) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_sensorSupported == false) {
-      return const SensorErrorWidget(
-        message:
-            'This device does not have a compass sensor. Qiblah direction cannot be shown.',
-      );
+      return SensorErrorWidget(message: l10n.sensorUnavailable);
     }
 
     final status = _locationStatus;
     if (status == null) {
       return _LocationError(
-        message: 'Unable to read location status',
+        message: l10n.locationStatusUnavailable,
         onRetry: _retryLocationAccess,
       );
     }
@@ -168,20 +171,20 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
     if (widget.location == null) {
       if (!status.enabled) {
         return _LocationError(
-          message: 'Please enable location services or select a city',
+          message: l10n.locationEnableOrSelectCity,
           onRetry: _retryLocationAccess,
         );
       }
 
       return _LocationError(
-        message: 'Location unavailable. Select a city or grant permission.',
+        message: l10n.locationUnavailableSelectCity,
         onRetry: _retryLocationAccess,
       );
     }
 
     if (!status.enabled) {
       return _LocationError(
-        message: 'Please enable location services',
+        message: l10n.locationEnableServices,
         onRetry: _retryLocationAccess,
       );
     }
@@ -196,12 +199,12 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
           break;
         }
         return _LocationError(
-          message: 'Location permission denied. Select a city or grant permission.',
+          message: l10n.locationPermissionDenied,
           onRetry: _retryLocationAccess,
         );
       default:
         return _LocationError(
-          message: 'Location unavailable',
+          message: l10n.locationUnavailable,
           onRetry: _retryLocationAccess,
         );
     }
@@ -230,6 +233,8 @@ class _LocationError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -242,7 +247,7 @@ class _LocationError extends StatelessWidget {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () => onRetry(),
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -355,11 +360,10 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (_streamTimedOut && _direction == null) {
-      return const SensorErrorWidget(
-        message:
-            'Compass data is unavailable. Try a physical device, set an emulator location, or select a city manually.',
-      );
+      return SensorErrorWidget(message: l10n.compassUnavailable);
     }
 
     final direction = _direction;

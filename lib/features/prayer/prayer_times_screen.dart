@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/l10n/l10n_extensions.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/utils/date_formatters.dart';
 import '../../core/widgets/safe_area_widgets.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/prayer_calculation_service.dart';
 import '../../providers/app_providers.dart';
 import '../location/manual_city_picker.dart';
@@ -45,6 +47,8 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     ref.listen(locationProvider, (previous, next) {
       if (next.location != null && previous?.location != next.location) {
         ref.read(prayerTimesProvider.notifier).load();
@@ -74,7 +78,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prayer Times'),
+        title: Text(l10n.prayerTimesTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -92,7 +96,8 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           child: _buildBody(
             context: context,
             ref: ref,
-            locationName: locationState.location?.cityName ?? 'Unknown',
+            l10n: l10n,
+            locationName: locationState.location?.cityName ?? l10n.locationUnavailable,
             prayerState: prayerState,
             nextPrayer: nextPrayer,
             nextTime: nextTime,
@@ -108,6 +113,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
   Widget _buildBody({
     required BuildContext context,
     required WidgetRef ref,
+    required AppLocalizations l10n,
     required String locationName,
     required PrayerTimesState prayerState,
     required PrayerName? nextPrayer,
@@ -125,12 +131,13 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
       );
     }
 
-    if (prayerState.error != null && prayerState.today == null) {
+    final errorMessage = l10n.prayerTimesErrorMessage(prayerState.errorCode);
+    if (errorMessage != null && prayerState.today == null) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const SizedBox(height: 120),
-          Center(child: Text(prayerState.error!)),
+          Center(child: Text(errorMessage)),
           const SizedBox(height: 16),
           Center(
             child: FilledButton(
@@ -145,7 +152,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                   ),
                 );
               },
-              child: const Text('Select City'),
+              child: Text(l10n.selectCity),
             ),
           ),
         ],
@@ -165,7 +172,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Today\'s Schedule',
+          l10n.todaysSchedule,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
           ),

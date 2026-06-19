@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class KaabaMarker extends StatelessWidget {
   const KaabaMarker({super.key});
@@ -117,23 +118,20 @@ class QiblahStatusBanner extends StatelessWidget {
   final bool aligned;
   final double offset;
 
-  String get _message {
-    if (aligned) {
-      return 'Facing Qiblah';
-    }
-    final degrees = offset.abs().ceil();
-    return offset > 0 ? 'Rotate right $degrees°' : 'Rotate left $degrees°';
-  }
-
-  IconData get _icon {
-    if (aligned) {
-      return Icons.check_circle;
-    }
-    return offset > 0 ? Icons.rotate_right : Icons.rotate_left;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final message = aligned
+        ? l10n.facingQiblah
+        : offset > 0
+            ? l10n.rotateRight(offset.abs().ceil())
+            : l10n.rotateLeft(offset.abs().ceil());
+    final icon = aligned
+        ? Icons.check_circle
+        : offset > 0
+            ? Icons.rotate_right
+            : Icons.rotate_left;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -151,12 +149,12 @@ class QiblahStatusBanner extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            _icon,
+            icon,
             color: aligned ? AppColors.goldAccent : AppColors.emeraldPrimary,
           ),
           const SizedBox(width: 8),
           Text(
-            _message,
+            message,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: aligned ? AppColors.emeraldPrimary : null,

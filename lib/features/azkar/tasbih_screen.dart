@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/safe_area_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/premium_widgets.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/app_providers.dart';
 
 class TasbihScreen extends ConsumerStatefulWidget {
@@ -44,23 +45,24 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
   }
 
   Future<void> _reset() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => SafeDialog(
         child: AlertDialog(
           title: DialogHeader(
-            title: 'Reset counter?',
+            title: l10n.resetCounterTitle,
             onClose: () => Navigator.pop(context, false),
           ),
-          content: const Text('This will clear your current Tasbih session count.'),
+          content: Text(l10n.resetCounterMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Reset'),
+              child: Text(l10n.reset),
             ),
           ],
         ),
@@ -81,13 +83,15 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tasbih Counter'),
+        title: Text(l10n.tasbihTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Reset',
+            tooltip: l10n.reset,
             onPressed: _reset,
           ),
         ],
@@ -126,12 +130,12 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Tap anywhere to count',
+                    l10n.tapToCountTasbih,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Milestones at 33 and 100',
+                    l10n.tasbihMilestones,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

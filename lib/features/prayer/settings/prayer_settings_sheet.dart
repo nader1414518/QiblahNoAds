@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_extensions.dart';
 import '../../../core/widgets/safe_area_widgets.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_widgets.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../providers/app_providers.dart';
 import '../../location/manual_city_picker.dart';
 
@@ -75,8 +77,17 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
     await _reloadPrayers();
   }
 
+  Future<void> _selectLocale(Locale locale) async {
+    await ref.read(preferencesServiceProvider).setLocale(locale);
+    ref.read(localeProvider.notifier).state = locale;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final currentLocale = ref.watch(localeProvider);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: SingleChildScrollView(
@@ -84,16 +95,31 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SheetHeader(title: 'Settings'),
+            SheetHeader(title: l10n.settings),
             const SizedBox(height: 16),
-            const SectionHeader(
-              title: 'Calculation Method',
-              subtitle: 'Match your local mosque authority',
+            SectionHeader(
+              title: l10n.language,
+              subtitle: l10n.languageSubtitle,
+            ),
+            ...supportedAppLocales.map((locale) {
+              final selected = currentLocale?.languageCode == locale.languageCode;
+              return ListTile(
+                title: Text(l10n.languageLabel(locale)),
+                trailing: selected
+                    ? const Icon(Icons.check_circle, color: AppColors.goldAccent)
+                    : null,
+                onTap: () => _selectLocale(locale),
+              );
+            }),
+            const GoldDivider(),
+            SectionHeader(
+              title: l10n.calculationMethod,
+              subtitle: l10n.calculationMethodSubtitle,
             ),
             ...CalculationMethodId.values.map((item) {
               final selected = _method == item;
               return ListTile(
-                title: Text(item.label),
+                title: Text(l10n.calculationMethodName(item)),
                 trailing: selected
                     ? const Icon(Icons.check_circle, color: AppColors.goldAccent)
                     : null,
@@ -101,11 +127,11 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
               );
             }),
             const GoldDivider(),
-            const SectionHeader(title: 'Madhab (Asr time)'),
+            SectionHeader(title: l10n.madhab),
             ...MadhabId.values.map((item) {
               final selected = _madhab == item;
               return ListTile(
-                title: Text(item.label),
+                title: Text(l10n.madhabName(item)),
                 trailing: selected
                     ? const Icon(Icons.check_circle, color: AppColors.goldAccent)
                     : null,
@@ -113,14 +139,14 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
               );
             }),
             const GoldDivider(),
-            const SectionHeader(
-              title: 'Fine-tune (minutes)',
-              subtitle: 'Adjust to match your local mosque timetable',
+            SectionHeader(
+              title: l10n.fineTune,
+              subtitle: l10n.fineTuneSubtitle,
             ),
             ..._adjustablePrayers.map((prayer) {
               final value = _adjustments[prayer] ?? 0;
               return ListTile(
-                title: Text(prayer.label),
+                title: Text(l10n.prayerName(prayer)),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -145,7 +171,7 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
               );
             }),
             SwitchListTile(
-              title: const Text('24-hour time format'),
+              title: Text(l10n.use24Hour),
               value: _use24Hour,
               onChanged: (value) async {
                 await ref.read(preferencesServiceProvider).setUse24Hour(value);
@@ -153,10 +179,10 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
               },
             ),
             const GoldDivider(),
-            const SectionHeader(title: 'Notifications'),
+            SectionHeader(title: l10n.notifications),
             ..._notifiablePrayers.map((prayer) {
               return SwitchListTile(
-                title: Text(prayer.label),
+                title: Text(l10n.prayerName(prayer)),
                 value: _notifications[prayer] ?? true,
                 onChanged: (enabled) async {
                   await ref.read(preferencesServiceProvider).setNotificationEnabled(
@@ -171,7 +197,7 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
             const GoldDivider(),
             ListTile(
               leading: const Icon(Icons.location_city_outlined),
-              title: const Text('Change city'),
+              title: Text(l10n.changeCity),
               onTap: () async {
                 Navigator.pop(context);
                 await Navigator.of(context).push(
@@ -185,7 +211,7 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
             ),
             ListTile(
               leading: const Icon(Icons.my_location_outlined),
-              title: const Text('Refresh GPS location'),
+              title: Text(l10n.refreshGps),
               onTap: () async {
                 Navigator.pop(context);
                 await ref.read(locationProvider.notifier).refreshGps();

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CalibrationBanner extends StatelessWidget {
   const CalibrationBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(14),
@@ -21,7 +24,7 @@ class CalibrationBanner extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Move your phone in a figure-8 to improve compass accuracy.',
+              l10n.calibrationHint,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

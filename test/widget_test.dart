@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:qiblah_no_ads/core/models/enums.dart';
 import 'package:qiblah_no_ads/core/models/models.dart';
+import 'package:qiblah_no_ads/l10n/app_localizations.dart';
 import 'package:qiblah_no_ads/features/shell/main_shell.dart';
 import 'package:qiblah_no_ads/providers/app_providers.dart';
 import 'package:qiblah_no_ads/services/calculation_method_resolver.dart';
@@ -121,6 +125,68 @@ void main() {
     expect(offset, closeTo(0, 0.001));
   });
 
+  test('AzkarItem.fromJson parses reference metadata', () {
+    final item = AzkarItem.fromJson({
+      'arabic': 'سُبْحَانَ اللَّهِ',
+      'english': 'Glory be to Allah.',
+      'repeat': 33,
+      'reference': {
+        'hisn': 87,
+        'type': 'hadith',
+        'citation': 'Muslim 597',
+        'collection': 'Sahih Muslim',
+        'narrator': 'Abu Hurayrah',
+        'grade': 'Sahih',
+      },
+    });
+
+    expect(item.reference?.hisn, 87);
+    expect(item.reference?.type, 'hadith');
+    expect(item.reference?.citation, 'Muslim 597');
+    expect(item.reference?.narrator, 'Abu Hurayrah');
+    expect(item.reference?.grade, 'Sahih');
+  });
+
+  testWidgets('Arabic locale renders RTL navigation labels', (WidgetTester tester) async {
+    final preferences = await PreferencesService.create();
+    await preferences.saveLocation(
+      latitude: 21.4225,
+      longitude: 39.8262,
+      cityName: 'Makkah, Saudi Arabia',
+      source: LocationSource.manual,
+      timeZoneId: 'Asia/Riyadh',
+    );
+    final notifications = NotificationService(preferences);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          preferencesServiceProvider.overrideWithValue(preferences),
+          notificationServiceProvider.overrideWithValue(notifications),
+        ],
+        child: const MaterialApp(
+          locale: Locale('ar'),
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('ar')],
+          home: MainShell(initialIndex: 2),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final direction = Directionality.of(tester.element(find.byType(NavigationBar)));
+    expect(direction, ui.TextDirection.rtl);
+    expect(find.text('القبلة'), findsOneWidget);
+    expect(find.text('أوقات الصلاة'), findsOneWidget);
+    expect(find.text('الأذكار'), findsWidgets);
+  });
+
   testWidgets('App shell shows three navigation tabs', (WidgetTester tester) async {
     final preferences = await PreferencesService.create();
     await preferences.saveLocation(
@@ -139,6 +205,13 @@ void main() {
           notificationServiceProvider.overrideWithValue(notifications),
         ],
         child: const MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
           home: MainShell(initialIndex: 2),
         ),
       ),

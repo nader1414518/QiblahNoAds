@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../core/constants/app_constants.dart';
+import '../core/l10n/l10n_extensions.dart';
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
+import '../l10n/app_localizations.dart';
 import '../services/timezone_service.dart';
 import 'preferences_service.dart';
 
@@ -116,10 +119,13 @@ class NotificationService {
         continue;
       }
 
+      final locale = _preferences.getLocale() ?? const Locale('en');
+      final l10n = lookupAppLocalizations(locale);
+
       await _plugin.zonedSchedule(
         _notificationIdFor(prayer),
-        'Prayer Time',
-        'It is time for ${prayer.label}',
+        l10n.notificationPrayerTitle,
+        l10n.notificationPrayerBody(l10n.prayerName(prayer)),
         timezoneService.toLocationDateTime(timeZoneId, scheduledTime),
         const NotificationDetails(
           android: AndroidNotificationDetails(

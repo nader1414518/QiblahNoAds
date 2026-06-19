@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n_extensions.dart';
 import '../../../core/models/enums.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../services/timezone_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/premium_widgets.dart';
@@ -91,7 +93,10 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
-    final prayerLabel = widget.prayerName?.label ?? 'Next Prayer';
+    final l10n = AppLocalizations.of(context);
+    final prayerLabel = widget.prayerName == null
+        ? l10n.nextPrayer
+        : l10n.prayerName(widget.prayerName!);
 
     return Column(
       children: [
@@ -196,6 +201,7 @@ class PrayerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final timeLabel = use24Hour
         ? DateFormat.Hm().format(time)
         : DateFormat.jm().format(time);
@@ -223,7 +229,7 @@ class PrayerListTile extends StatelessWidget {
           color: isNext ? AppColors.goldAccent : AppColors.emeraldPrimary,
         ),
         title: Text(
-          name.label,
+          l10n.prayerName(name),
           style: TextStyle(
             fontWeight: isNext ? FontWeight.bold : FontWeight.w500,
           ),

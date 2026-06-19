@@ -38,7 +38,7 @@ class _LocationGateState extends ConsumerState<LocationGate> {
 
     if (locationState.needsManualSelection && locationState.location == null) {
       return ManualCityPicker(
-        message: locationState.error,
+        errorCode: locationState.errorCode,
         bottomSafeArea: false,
         onSelected: () async {
           await ref.read(prayerTimesProvider.notifier).load();

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/l10n/l10n_extensions.dart';
 import '../core/models/enums.dart';
 import '../core/models/models.dart';
 import '../services/location_service.dart';
@@ -59,25 +58,26 @@ class LocationState {
     this.location,
     this.isLoading = false,
     this.needsManualSelection = false,
-    this.error,
+    this.errorCode,
   });
 
   final AppLocation? location;
   final bool isLoading;
   final bool needsManualSelection;
-  final String? error;
+  final String? errorCode;
 
   LocationState copyWith({
     AppLocation? location,
     bool? isLoading,
     bool? needsManualSelection,
-    String? error,
+    String? errorCode,
+    bool clearErrorCode = false,
   }) {
     return LocationState(
       location: location ?? this.location,
       isLoading: isLoading ?? this.isLoading,
       needsManualSelection: needsManualSelection ?? this.needsManualSelection,
-      error: error,
+      errorCode: clearErrorCode ? null : (errorCode ?? this.errorCode),
     );
   }
 }
@@ -98,7 +98,7 @@ class LocationNotifier extends StateNotifier<LocationState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearErrorCode: true);
 
     try {
       final saved = await _locationService.getSavedLocation();
@@ -116,19 +116,19 @@ class LocationNotifier extends StateNotifier<LocationState> {
       state = state.copyWith(
         isLoading: false,
         needsManualSelection: true,
-        error: 'Location unavailable. Please select a city.',
+        errorCode: 'location_unavailable_select_city',
       );
     } catch (_) {
       state = state.copyWith(
         isLoading: false,
         needsManualSelection: true,
-        error: 'Location unavailable. Please select a city.',
+        errorCode: 'location_unavailable_select_city',
       );
     }
   }
 
   Future<void> refreshGps() async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearErrorCode: true);
     try {
       final gps = await _locationService.fetchGpsLocation();
       if (gps != null) {
@@ -143,19 +143,19 @@ class LocationNotifier extends StateNotifier<LocationState> {
       state = state.copyWith(
         isLoading: false,
         needsManualSelection: true,
-        error: 'Unable to get GPS location. Please select a city.',
+        errorCode: 'unable_to_get_gps',
       );
     } catch (_) {
       state = state.copyWith(
         isLoading: false,
         needsManualSelection: true,
-        error: 'Unable to get GPS location. Please select a city.',
+        errorCode: 'unable_to_get_gps',
       );
     }
   }
 
   Future<void> selectCity(City city) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearErrorCode: true);
     final location = await _locationService.saveManualCity(city);
     state = state.copyWith(
       location: location,
@@ -176,14 +176,14 @@ class PrayerTimesState {
     this.tomorrow,
     this.schedule = const [],
     this.isLoading = false,
-    this.error,
+    this.errorCode,
   });
 
   final DailyPrayerTimes? today;
   final DailyPrayerTimes? tomorrow;
   final List<PrayerScheduleEntry> schedule;
   final bool isLoading;
-  final String? error;
+  final String? errorCode;
 }
 
 class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
@@ -204,7 +204,7 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
   Future<void> load() async {
     final location = _ref.read(locationProvider).location;
     if (location == null) {
-      state = const PrayerTimesState(error: 'Location not set');
+      state = const PrayerTimesState(errorCode: 'location_not_set');
       return;
     }
 
@@ -233,7 +233,7 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
       final tomorrowTimes = monthCache[tomorrowKey];
 
       if (today == null) {
-        state = const PrayerTimesState(error: 'Unable to calculate prayer times');
+        state = const PrayerTimesState(errorCode: 'unable_to_calculate');
         return;
       }
 
@@ -251,9 +251,9 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
         timeZoneId: location.timeZoneId,
       );
     } catch (error) {
-      state = PrayerTimesState(
+      state = const PrayerTimesState(
         isLoading: false,
-        error: 'Failed to load prayer times',
+        errorCode: 'failed_to_load',
       );
     }
   }

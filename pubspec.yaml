@@ -37,4 +37,6 @@ flutter:
     - assets/compass.svg
     - assets/needle.svg
     - lib/data/cities.json
-    - lib/data/azkar.json
+    - lib/data/azkar/morning.json
+    - lib/data/azkar/evening.json
+    - lib/data/azkar/post_prayer.json

@@ -1,13 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/widgets/safe_area_widgets.dart';
+import '../../core/l10n/l10n_extensions.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/models.dart';
 import '../../core/widgets/premium_widgets.dart';
+import '../../core/widgets/safe_area_widgets.dart';
+import '../../l10n/app_localizations.dart';
+import '../../services/azkar_service.dart';
 import 'tasbih_screen.dart';
 import 'widgets/azkar_list_tile.dart';
 
@@ -24,12 +24,6 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
   Map<String, List<AzkarItem>> _azkar = {};
   bool _loading = true;
 
-  static const _categoryDescriptions = {
-    AzkarCategory.morning: 'Morning remembrance after Fajr — Hisn al-Muslim',
-    AzkarCategory.evening: 'Evening remembrance after Asr — Hisn al-Muslim',
-    AzkarCategory.postPrayer: 'Dhikr after every obligatory prayer',
-  };
-
   @override
   void initState() {
     super.initState();
@@ -38,15 +32,12 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
   }
 
   Future<void> _loadAzkar() async {
-    final raw = await rootBundle.loadString('lib/data/azkar.json');
-    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    final azkar = await AzkarService().loadAll();
+    if (!mounted) {
+      return;
+    }
     setState(() {
-      _azkar = decoded.map((key, value) {
-        final items = (value as List<dynamic>)
-            .map((entry) => AzkarItem.fromJson(entry as Map<String, dynamic>))
-            .toList();
-        return MapEntry(key, items);
-      });
+      _azkar = azkar;
       _loading = false;
     });
   }
@@ -59,6 +50,7 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final categories = [
       AzkarCategory.morning,
       AzkarCategory.evening,
@@ -67,10 +59,12 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Azkar'),
+        title: Text(l10n.azkarTitle),
         bottom: TabBar(
           controller: _tabController,
-          tabs: categories.map((c) => Tab(text: c.label)).toList(),
+          tabs: categories
+              .map((c) => Tab(text: l10n.azkarCategoryName(c)))
+              .toList(),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -80,7 +74,7 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
           );
         },
         icon: const Icon(Icons.touch_app_outlined),
-        label: const Text('Tasbih'),
+        label: Text(l10n.tasbih),
       ),
       body: SafeScreenBody(
         bottom: false,
@@ -94,14 +88,16 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
                     padding: const EdgeInsets.all(16),
                     children: [
                       SectionHeader(
-                        title: category.label,
-                        subtitle: _categoryDescriptions[category],
+                        title: l10n.azkarCategoryName(category),
+                        subtitle: l10n.azkarCategoryDescription(category),
                       ),
                       const SizedBox(height: 12),
-                      ...items.map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: AzkarListTile(item: item),
-                      )),
+                      ...items.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: AzkarListTile(item: item),
+                        ),
+                      ),
                     ],
                   );
                 }).toList(),
