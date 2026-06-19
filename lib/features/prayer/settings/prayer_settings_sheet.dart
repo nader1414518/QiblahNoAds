@@ -84,7 +84,7 @@ class _PrayerSettingsSheetState extends ConsumerState<PrayerSettingsSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Settings', style: Theme.of(context).textTheme.titleLarge),
+            const SheetHeader(title: 'Settings'),
             const SizedBox(height: 16),
             const SectionHeader(
               title: 'Calculation Method',

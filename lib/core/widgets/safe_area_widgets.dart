@@ -75,3 +75,74 @@ class SafeDialog extends StatelessWidget {
     );
   }
 }
+
+/// Icon button that dismisses the current modal route.
+class ModalCloseButton extends StatelessWidget {
+  const ModalCloseButton({
+    super.key,
+    this.onPressed,
+  });
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.close),
+      tooltip: 'Close',
+      onPressed: onPressed ?? () => Navigator.maybePop(context),
+    );
+  }
+}
+
+/// Title row with a close button for bottom sheets.
+class SheetHeader extends StatelessWidget {
+  const SheetHeader({
+    super.key,
+    required this.title,
+  });
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        const ModalCloseButton(),
+      ],
+    );
+  }
+}
+
+/// Title row with a close button for dialogs.
+class DialogHeader extends StatelessWidget {
+  const DialogHeader({
+    super.key,
+    required this.title,
+    this.onClose,
+  });
+
+  final String title;
+  final VoidCallback? onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        ModalCloseButton(onPressed: onClose),
+      ],
+    );
+  }
+}

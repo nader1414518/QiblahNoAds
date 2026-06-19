@@ -48,7 +48,10 @@ class _TasbihScreenState extends ConsumerState<TasbihScreen> {
       context: context,
       builder: (context) => SafeDialog(
         child: AlertDialog(
-          title: const Text('Reset counter?'),
+          title: DialogHeader(
+            title: 'Reset counter?',
+            onClose: () => Navigator.pop(context, false),
+          ),
           content: const Text('This will clear your current Tasbih session count.'),
           actions: [
             TextButton(
