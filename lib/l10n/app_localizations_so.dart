@@ -95,6 +95,10 @@ class AppLocalizationsSo extends AppLocalizations {
       'U dhaqaaq taleefanka qaab 8 si aad u hagaajiso saxnaanta kombaaska.';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'Wajahaya Qiblah';
 
   @override

@@ -95,6 +95,10 @@ class AppLocalizationsMs extends AppLocalizations {
       'Gerakkan telefon anda membentuk angka 8 untuk meningkatkan ketepatan kompas.';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'Menghadap Kiblat';
 
   @override

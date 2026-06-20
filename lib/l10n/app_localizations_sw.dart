@@ -95,6 +95,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Songesha simu yako kwa umbo la 8 kuboresha usahihi wa dira.';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'Unaelekea Qiblah';
 
   @override

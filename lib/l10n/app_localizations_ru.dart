@@ -96,6 +96,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Двигайте телефон в форме восьмёрки для повышения точности компаса.';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'Лицом к кибле';
 
   @override

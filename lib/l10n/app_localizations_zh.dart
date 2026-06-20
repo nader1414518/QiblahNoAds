@@ -87,6 +87,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get calibrationHint => '以8字形移动手机以提高指南针精度。';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => '已朝向克尔白';
 
   @override

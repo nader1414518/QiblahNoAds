@@ -298,6 +298,12 @@ abstract class AppLocalizations {
   /// **'Move your phone in a figure-8 to improve compass accuracy.'**
   String get calibrationHint;
 
+  /// No description provided for @qiblahAccuracyDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.'**
+  String get qiblahAccuracyDisclaimer;
+
   /// No description provided for @facingQiblah.
   ///
   /// In en, this message translates to:

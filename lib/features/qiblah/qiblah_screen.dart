@@ -17,6 +17,7 @@ import '../../core/widgets/safe_area_widgets.dart';
 import '../../core/widgets/settings_button.dart';
 import '../location/manual_city_picker.dart';
 import 'widgets/calibration_banner.dart';
+import 'widgets/qiblah_accuracy_disclaimer.dart';
 import 'widgets/qiblah_compass_face.dart';
 import 'widgets/sensor_error.dart';
 
@@ -115,7 +116,14 @@ class _QiblahScreenState extends ConsumerState<QiblahScreen> {
       ),
       body: SafeScreenBody(
         bottom: false,
-        child: _QiblahBody(locationState: locationState),
+        child: Column(
+          children: [
+            Expanded(
+              child: _QiblahBody(locationState: locationState),
+            ),
+            const QiblahAccuracyDisclaimer(),
+          ],
+        ),
       ),
     );
   }

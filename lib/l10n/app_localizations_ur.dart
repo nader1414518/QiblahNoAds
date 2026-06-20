@@ -94,6 +94,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'کمپاس کی درستگی بہتر بنانے کے لیے فون کو 8 کی شکل میں حرکت دیں۔';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'قبلہ رخ';
 
   @override

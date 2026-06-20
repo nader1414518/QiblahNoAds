@@ -95,6 +95,10 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਕੰਪਾਸ ਦੀ ਸ਼ੁੱਧਤਾ ਵਧਾਉਣ ਲਈ ਫ਼ੋਨ ਨੂੰ 8 ਦੇ ਆਕਾਰ ਵਿੱਚ ਘੁਮਾਓ।';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'ਕਿਬਲਾ ਵੱਲ';
 
   @override

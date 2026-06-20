@@ -94,6 +94,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get calibrationHint => 'حرّك هاتفك بحركة رقم 8 لتحسين دقة البوصلة.';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'متجه نحو القبلة';
 
   @override

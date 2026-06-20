@@ -95,6 +95,10 @@ class AppLocalizationsTa extends AppLocalizations {
       'திசைகாட்டி துல்லியத்தை மேம்படுத்த ஃபோனை 8 வடிவில் அசைக்கவும்.';
 
   @override
+  String get qiblahAccuracyDisclaimer =>
+      'Qiblah direction is approximate. Accuracy depends on your device compass, location, and magnetic interference. Calibrate your phone and verify with a physical compass when precision matters.';
+
+  @override
   String get facingQiblah => 'கிப்லா நோக்கி';
 
   @override
