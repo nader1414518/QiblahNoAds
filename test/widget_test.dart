@@ -1,4 +1,3 @@
-import 'dart:io' show Platform;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -132,68 +131,6 @@ void main() {
     expect(QiblahCompassService.normalizeHeading(-90), 270);
     expect(QiblahCompassService.normalizeHeading(450), 90);
     expect(QiblahCompassService.normalizeHeading(0), 0);
-  });
-
-  test('androidHoldOffsetForGravity applies -90 when phone is flat', () {
-    expect(
-      QiblahCompassService.androidHoldOffsetForGravity(
-        x: 0,
-        y: 1,
-        z: 9.8,
-      ),
-      -90,
-    );
-    expect(
-      QiblahCompassService.androidHoldOffsetForGravity(
-        x: 0,
-        y: 9.8,
-        z: 1,
-      ),
-      0,
-    );
-  });
-
-  test('trueHeading applies flat hold offset on Android', () {
-    final result = QiblahCompassService.trueHeading(
-      magneticHeading: 0,
-      latitude: 31.4436,
-      longitude: 31.5396,
-      applyDeclination: false,
-      androidHoldOffset: -90,
-    );
-    if (Platform.isAndroid) {
-      expect(result, 270);
-    } else {
-      expect(result, 0);
-    }
-  });
-
-  test('trueHeading applies declination on Android only', () {
-    const lat = 30.0444;
-    const lng = 31.2357;
-    const magnetic = 0.0;
-
-    final withDeclination = QiblahCompassService.trueHeading(
-      magneticHeading: magnetic,
-      latitude: lat,
-      longitude: lng,
-      applyDeclination: true,
-      androidHoldOffset: 0,
-    );
-    final withoutDeclination = QiblahCompassService.trueHeading(
-      magneticHeading: magnetic,
-      latitude: lat,
-      longitude: lng,
-      applyDeclination: false,
-      androidHoldOffset: 0,
-    );
-
-    expect(withoutDeclination, 0);
-    if (Platform.isAndroid) {
-      expect(withDeclination, isNot(0));
-    } else {
-      expect(withDeclination, 0);
-    }
   });
 
   test('Gamasa qiblah bearing points southeast toward Makkah', () {

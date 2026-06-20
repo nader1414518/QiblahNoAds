@@ -1,6 +1,7 @@
 class AppConstants {
   static const String appName = 'Al-Qiblah & Prayer Companion';
-  static const double qiblahAlignmentThreshold = 3.0;
+  /// Degrees from Qiblah within which the UI shows aligned (gold ring, haptic).
+  static const double qiblahAlignmentThreshold = 8.0;
   static const double qiblahCalibrationThreshold = 15.0;
 
   static const String prefCalculationMethod = 'calculation_method';

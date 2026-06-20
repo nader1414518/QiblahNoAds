@@ -20,41 +20,61 @@ import 'widgets/calibration_banner.dart';
 import 'widgets/qiblah_compass_face.dart';
 import 'widgets/sensor_error.dart';
 
-class QiblahScreen extends ConsumerWidget {
+class QiblahScreen extends ConsumerStatefulWidget {
   const QiblahScreen({super.key});
 
-  Future<void> _useCurrentLocation(BuildContext context, WidgetRef ref) async {
-    await ref.read(locationProvider.notifier).refreshGps();
-    await ref.read(prayerTimesProvider.notifier).load();
+  @override
+  ConsumerState<QiblahScreen> createState() => _QiblahScreenState();
+}
 
-    if (!context.mounted) {
+class _QiblahScreenState extends ConsumerState<QiblahScreen> {
+  bool _isUsingCurrentLocation = false;
+
+  Future<void> _useCurrentLocation(BuildContext context) async {
+    if (_isUsingCurrentLocation) {
       return;
     }
 
-    final location = ref.read(locationProvider).location;
-    final messenger = ScaffoldMessenger.of(context);
-    final l10n = AppLocalizations.of(context);
-    if (location?.source == LocationSource.gps) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.currentLocationSaved),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.emeraldPrimary,
-        ),
-      );
-    } else {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.unableToGetGps),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+    setState(() => _isUsingCurrentLocation = true);
+    try {
+      await ref.read(locationProvider.notifier).refreshGps();
+      await ref.read(prayerTimesProvider.notifier).load();
+
+      if (!context.mounted) {
+        return;
+      }
+
+      final location = ref.read(locationProvider).location;
+      final messenger = ScaffoldMessenger.of(context);
+      final l10n = AppLocalizations.of(context);
+      if (location?.source == LocationSource.gps) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.currentLocationSaved),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.emeraldPrimary,
+          ),
+        );
+      } else {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.unableToGetGps),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUsingCurrentLocation = false);
+      }
     }
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final location = ref.watch(locationProvider.select((state) => state.location));
+  Widget build(BuildContext context) {
+    final locationState = ref.watch(locationProvider);
+    final isLocationLoading =
+        locationState.isLoading || _isUsingCurrentLocation;
 
     final l10n = AppLocalizations.of(context);
 
@@ -63,40 +83,48 @@ class QiblahScreen extends ConsumerWidget {
         title: Text(l10n.qiblahTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.my_location),
             tooltip: l10n.useCurrentLocation,
-            onPressed: () => _useCurrentLocation(context, ref),
+            onPressed: isLocationLoading ? null : () => _useCurrentLocation(context),
+            icon: isLocationLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.my_location),
           ),
           IconButton(
             icon: const Icon(Icons.location_city_outlined),
             tooltip: l10n.changeCity,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => ManualCityPicker(
-                    onSelected: () {
-                      ref.read(prayerTimesProvider.notifier).load();
-                    },
-                  ),
-                ),
-              );
-            },
+            onPressed: isLocationLoading
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => ManualCityPicker(
+                          onSelected: () {
+                            ref.read(prayerTimesProvider.notifier).load();
+                          },
+                        ),
+                      ),
+                    );
+                  },
           ),
           const SettingsIconButton(),
         ],
       ),
       body: SafeScreenBody(
         bottom: false,
-        child: _QiblahBody(location: location),
+        child: _QiblahBody(locationState: locationState),
       ),
     );
   }
 }
 
 class _QiblahBody extends ConsumerStatefulWidget {
-  const _QiblahBody({required this.location});
+  const _QiblahBody({required this.locationState});
 
-  final AppLocation? location;
+  final LocationState locationState;
 
   @override
   ConsumerState<_QiblahBody> createState() => _QiblahBodyState();
@@ -104,8 +132,8 @@ class _QiblahBody extends ConsumerStatefulWidget {
 
 class _QiblahBodyState extends ConsumerState<_QiblahBody> {
   bool _isInitializing = true;
-  bool? _sensorSupported;
   LocationStatus? _locationStatus;
+  int _compassRestartGeneration = 0;
 
   @override
   void initState() {
@@ -115,21 +143,12 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
 
   Future<void> _initialize() async {
     try {
-      bool? sensorResult;
-      try {
-        sensorResult = await FlutterQiblah.androidDeviceSensorSupport();
-      } catch (_) {
-        sensorResult = true;
-      }
-      final sensorSupported = sensorResult ?? true;
-
       final locationStatus = await FlutterQiblah.checkLocationStatus();
       if (!mounted) {
         return;
       }
 
       setState(() {
-        _sensorSupported = sensorSupported;
         _locationStatus = locationStatus;
         _isInitializing = false;
       });
@@ -153,13 +172,20 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final location = widget.locationState.location;
+
+    ref.listen<LocationState>(locationProvider, (previous, next) {
+      if (previous?.location != next.location) {
+        setState(() => _compassRestartGeneration++);
+      }
+    });
 
     if (_isInitializing) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_sensorSupported == false) {
-      return SensorErrorWidget(message: l10n.sensorUnavailable);
+    if (widget.locationState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
 
     final status = _locationStatus;
@@ -170,7 +196,7 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
       );
     }
 
-    if (widget.location == null) {
+    if (location == null) {
       if (!status.enabled) {
         return _LocationError(
           message: l10n.locationEnableOrSelectCity,
@@ -197,7 +223,7 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
         break;
       case LocationPermission.denied:
       case LocationPermission.deniedForever:
-        if (widget.location!.source == LocationSource.manual) {
+        if (location.source == LocationSource.manual) {
           break;
         }
         return _LocationError(
@@ -212,15 +238,18 @@ class _QiblahBodyState extends ConsumerState<_QiblahBody> {
     }
 
     return QiblahCompassWidget(
-      key: ValueKey(_locationKey(widget.location!)),
-      latitude: widget.location!.latitude,
-      longitude: widget.location!.longitude,
-      cityName: widget.location!.cityName,
+      key: ValueKey(
+        '${_locationKey(location)}:$_compassRestartGeneration',
+      ),
+      latitude: location.latitude,
+      longitude: location.longitude,
+      cityName: location.cityName,
     );
   }
 
   String _locationKey(AppLocation location) {
-    return '${location.latitude}:${location.longitude}:${location.source.name}';
+    return '${location.latitude}:${location.longitude}:'
+        '${location.source.name}:${location.cityName}';
   }
 }
 
@@ -293,7 +322,8 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
   void didUpdateWidget(covariant QiblahCompassWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.latitude != widget.latitude ||
-        oldWidget.longitude != widget.longitude) {
+        oldWidget.longitude != widget.longitude ||
+        oldWidget.cityName != widget.cityName) {
       _wasAligned = false;
       _startCompassStream();
     }
