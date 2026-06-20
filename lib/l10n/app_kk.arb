@@ -1,0 +1,138 @@
+{
+  "@@locale": "kk",
+  "appTitle": "Al-Qiblah және Намаз Көмекшісі",
+  "navQiblah": "Қибла",
+  "navPrayerTimes": "Намаз Уақыттары",
+  "navAzkar": "Азкар",
+  "close": "Жабу",
+  "cancel": "Болдырмау",
+  "reset": "Қайта орнату",
+  "retry": "Қайта көру",
+  "done": "Дайын",
+  "showMore": "Көбірек көрсету",
+  "showLess": "Аз көрсету",
+  "qiblahTitle": "Қибла",
+  "useCurrentLocation": "Ағымдағы орынды пайдалану",
+  "changeCity": "Қаланы өзгерту",
+  "currentLocationSaved": "Ағымдағы орын сақталды",
+  "unableToGetGps": "GPS алу мүмкін емес. Қаланы таңдап көріңіз.",
+  "locationStatusUnavailable": "Орын күйін оқу мүмкін емес",
+  "locationEnableServices": "Орын қызметтерін қосыңыз",
+  "locationEnableOrSelectCity": "Орын қызметтерін қосыңыз немесе қаланы таңдаңыз",
+  "locationUnavailableSelectCity": "Орын қолжетімсіз. Қаланы таңдаңыз немесе рұқсат беріңіз.",
+  "locationPermissionDenied": "Орын рұқсаты қабылданбады. Қаланы таңдаңыз немесе рұқсат беріңіз.",
+  "locationPermissionDeniedForever": "Орын рұқсаты тұрақты түрде қабылданбады. Баптауларда қаланы таңдаңыз.",
+  "locationUnavailable": "Орын қолжетімсіз",
+  "sensorUnavailable": "Бұл құрылғыда компас сенсоры жоқ. Қибла бағытын көрсету мүмкін емес.",
+  "compassUnavailable": "Компас деректері қолжетімсіз. Нақты құрылғыны пайдаланып көріңіз, эмулятор орнын орнатыңыз немесе қаланы қолмен таңдаңыз.",
+  "calibrationHint": "Компас дәлдігін арттыру үшін телефонды 8 пішінінде қозғалыңыз.",
+  "facingQiblah": "Қиблаға қарап",
+  "rotateLeft": "Солға {degrees}° бұру",
+  "@rotateLeft": {
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "rotateRight": "Оңға {degrees}° бұру",
+  "@rotateRight": {
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "prayerTimesTitle": "Намаз Уақыттары",
+  "settings": "Баптаулар",
+  "todaysSchedule": "Бүгінгі Кесте",
+  "nextPrayer": "Келесі Намаз",
+  "locationNotSet": "Орын орнатылмаған",
+  "failedToLoadPrayerTimes": "Намаз уақыттарын жүктеу сәтсіз аяқталды",
+  "unableToCalculatePrayerTimes": "Намаз уақыттарын есептеу мүмкін емес",
+  "selectCity": "Қаланы Таңдау",
+  "searchCityHint": "Қала немесе ел іздеу",
+  "calculationMethod": "Есептеу Әдісі",
+  "calculationMethodSubtitle": "Жергілікті мешіт органына сәйкес келтіріңіз",
+  "madhab": "Мазхаб (Аср уақыты)",
+  "fineTune": "Нақты реттеу (минут)",
+  "fineTuneSubtitle": "Жергілікті мешіт кестесіне сәйкестендіріңіз",
+  "use24Hour": "24 сағаттық уақыт форматы",
+  "notifications": "Хабарландырулар",
+  "refreshGps": "GPS орнын жаңарту",
+  "language": "Тіл",
+  "languageSubtitle": "Қолданба тілін таңдаңыз",
+  "methodMuslimWorldLeague": "Мусылмандар Әлем Лигасы",
+  "methodIsna": "ISNA",
+  "methodUmmAlQura": "Умм әл-Құра",
+  "methodEgyptian": "Мысыр Жалпы Органы",
+  "methodKarachi": "Карачи Университеті",
+  "madhabShafi": "Шафии",
+  "madhabHanafi": "Ханафи",
+  "prayerFajr": "Таң",
+  "prayerSunrise": "Күн шығу",
+  "prayerDhuhr": "Бесін",
+  "prayerAsr": "Екінті",
+  "prayerMaghrib": "Ақшам",
+  "prayerIsha": "Құптан",
+  "azkarTitle": "Азкар",
+  "tasbih": "Тасбих",
+  "categoryMorning": "Таңертең",
+  "categoryEvening": "Кеш",
+  "categoryPostPrayer": "Намаздан кейін",
+  "morningDescription": "Таң намаздан кейін таңертен зикр — Хисн аль-Муслим",
+  "eveningDescription": "Екінті намаздан кейін кеш зикр — Хисн аль-Муслим",
+  "postPrayerDescription": "Ар міндетті намаздан кейін зикр",
+  "tapToCount": "Қайталауларды санау үшін карточканы басыңыз",
+  "referenceQuran": "Қуран",
+  "referenceHadith": "Хадис",
+  "referenceAthar": "Атар",
+  "narrator": "Айтушы",
+  "grade": "Дәреже",
+  "hisnNumber": "Hisn #{number}",
+  "@hisnNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "tasbihTitle": "Тасбих санағышы",
+  "tapToCountTasbih": "Санау үшін кез келген жерді басыңыз",
+  "tasbihMilestones": "33 және 100-де белгілер",
+  "resetCounterTitle": "Санағышты қайта орнату?",
+  "resetCounterMessage": "Бұл ағымдағы тасбих сеансындағы санағыңызды тазалайды.",
+  "notificationPrayerTitle": "Намаз Уақыты",
+  "notificationPrayerBody": "{prayer} уақыты болды",
+  "@notificationPrayerBody": {
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "langEnglish": "English",
+  "langArabic": "العربية",
+  "langFrench": "Français",
+  "langUrdu": "اردو",
+  "langTurkish": "Türkçe",
+  "langIndonesian": "Bahasa Indonesia",
+  "langBengali": "বাংলা",
+  "langGerman": "Deutsch",
+  "langSpanish": "Español",
+  "langMalay": "Bahasa Melayu",
+  "langPersian": "فارسی",
+  "langHindi": "हिन्दी",
+  "langRussian": "Русский",
+  "langItalian": "Italiano",
+  "langDutch": "Nederlands",
+  "langSwahili": "Kiswahili",
+  "langPortuguese": "Português",
+  "langMalayalam": "മലയാളം",
+  "langTamil": "தமிழ்",
+  "langPunjabi": "ਪੰਜਾਬੀ",
+  "langSomali": "Soomaali",
+  "langUzbek": "O'zbek",
+  "langKazakh": "Қазақша",
+  "langChinese": "中文"
+}
