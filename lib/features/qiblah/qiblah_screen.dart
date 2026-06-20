@@ -12,7 +12,7 @@ import '../../core/models/models.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
-import '../../services/qiblah_bearing.dart';
+import '../../services/qiblah_compass_service.dart';
 import '../../core/widgets/safe_area_widgets.dart';
 import '../../core/widgets/settings_button.dart';
 import '../location/manual_city_picker.dart';
@@ -277,15 +277,16 @@ class QiblahCompassWidget extends ConsumerStatefulWidget {
 class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
   bool _wasAligned = false;
   bool _streamTimedOut = false;
-  StreamSubscription<QiblahDirection>? _subscription;
+  StreamSubscription<QiblahCompassUpdate>? _subscription;
   QiblahDirection? _direction;
   Timer? _timeoutTimer;
-  double? _lastHeading;
+  QiblahCompassService? _compassService;
+  bool _sensorNeedsCalibration = false;
 
   @override
   void initState() {
     super.initState();
-    _startQiblahStream();
+    _startCompassStream();
   }
 
   @override
@@ -294,23 +295,38 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
     if (oldWidget.latitude != widget.latitude ||
         oldWidget.longitude != widget.longitude) {
       _wasAligned = false;
-      _applyHeading(_lastHeading);
+      _startCompassStream();
     }
   }
 
-  void _startQiblahStream() {
+  void _startCompassStream() {
     _subscription?.cancel();
     _timeoutTimer?.cancel();
-    _direction = null;
-    _streamTimedOut = false;
-    _wasAligned = false;
+    _compassService?.dispose();
 
-    _subscription = FlutterQiblah.qiblahStream.listen(
-      (direction) {
+    _compassService = QiblahCompassService(
+      latitude: widget.latitude,
+      longitude: widget.longitude,
+    );
+
+    setState(() {
+      _direction = null;
+      _streamTimedOut = false;
+      _wasAligned = false;
+      _sensorNeedsCalibration = false;
+    });
+
+    _subscription = _compassService!.stream.listen(
+      (update) {
         if (!mounted) {
           return;
         }
-        _applyHeading(direction.direction);
+        setState(() {
+          if (update.direction != null) {
+            _direction = update.direction;
+          }
+          _sensorNeedsCalibration = update.needsCalibration;
+        });
       },
       onError: (_) {
         if (!mounted) {
@@ -321,33 +337,18 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
     );
 
     _timeoutTimer = Timer(const Duration(seconds: 8), () {
-      if (!mounted || _direction != null) {
+      if (!mounted || _direction != null || _sensorNeedsCalibration) {
         return;
       }
       setState(() => _streamTimedOut = true);
     });
   }
 
-  void _applyHeading(double? heading) {
-    if (heading == null) {
-      return;
-    }
-
-    _lastHeading = heading;
-    final bearing = QiblahBearing.fromNorth(widget.latitude, widget.longitude);
-    final qiblah = heading + (360 - bearing);
-    final offset = QiblahBearing.normalizeAngle(bearing - heading);
-
-    setState(
-      () => _direction = QiblahDirection(qiblah, heading, offset),
-    );
-  }
-
   @override
   void dispose() {
     _timeoutTimer?.cancel();
     _subscription?.cancel();
-    FlutterQiblah().dispose();
+    _compassService?.dispose();
     super.dispose();
   }
 
@@ -364,19 +365,26 @@ class _QiblahCompassWidgetState extends ConsumerState<QiblahCompassWidget> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    if (_streamTimedOut && _direction == null) {
+    if (_streamTimedOut && _direction == null && !_sensorNeedsCalibration) {
       return SensorErrorWidget(message: l10n.compassUnavailable);
     }
 
     final direction = _direction;
     if (direction == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Column(
+        children: [
+          if (_sensorNeedsCalibration) const CalibrationBanner(),
+          const Expanded(
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ],
+      );
     }
 
     _handleAlignment(direction.offset);
     final aligned =
         direction.offset.abs() <= AppConstants.qiblahAlignmentThreshold;
-    final needsCalibration =
+    final needsCalibration = _sensorNeedsCalibration ||
         direction.offset.abs() >= AppConstants.qiblahCalibrationThreshold;
 
     return Column(

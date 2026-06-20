@@ -15,6 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^2.6.1
   flutter_qiblah: ^3.2.0
+  flutter_compass_v2: ^1.0.3
   geolocator: ^14.0.2
   adhan: ^2.0.0+1
   flutter_local_notifications: ^19.0.0
@@ -24,6 +25,8 @@ dependencies:
   flutter_svg: ^2.0.17
   google_fonts: ^6.2.1
   lat_lng_to_timezone: ^0.2.0
+  geomag: ^0.3.0
+  sensors_plus: ^6.1.1
 
 dev_dependencies:
   flutter_test:

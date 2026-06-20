@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'package:qiblah_no_ads/services/calculation_method_resolver.dart';
 import 'package:qiblah_no_ads/services/notification_service.dart';
 import 'package:qiblah_no_ads/services/preferences_service.dart';
 import 'package:qiblah_no_ads/services/prayer_calculation_service.dart';
+import 'package:qiblah_no_ads/services/qiblah_compass_service.dart';
 import 'package:qiblah_no_ads/services/qiblah_bearing.dart';
 import 'package:qiblah_no_ads/services/timezone_service.dart';
 
@@ -124,6 +126,93 @@ void main() {
     final offset = QiblahBearing.normalizeAngle(bearing - bearing);
 
     expect(offset, closeTo(0, 0.001));
+  });
+
+  test('normalizeHeading wraps negative and overflow angles', () {
+    expect(QiblahCompassService.normalizeHeading(-90), 270);
+    expect(QiblahCompassService.normalizeHeading(450), 90);
+    expect(QiblahCompassService.normalizeHeading(0), 0);
+  });
+
+  test('androidHoldOffsetForGravity applies -90 when phone is flat', () {
+    expect(
+      QiblahCompassService.androidHoldOffsetForGravity(
+        x: 0,
+        y: 1,
+        z: 9.8,
+      ),
+      -90,
+    );
+    expect(
+      QiblahCompassService.androidHoldOffsetForGravity(
+        x: 0,
+        y: 9.8,
+        z: 1,
+      ),
+      0,
+    );
+  });
+
+  test('trueHeading applies flat hold offset on Android', () {
+    final result = QiblahCompassService.trueHeading(
+      magneticHeading: 0,
+      latitude: 31.4436,
+      longitude: 31.5396,
+      applyDeclination: false,
+      androidHoldOffset: -90,
+    );
+    if (Platform.isAndroid) {
+      expect(result, 270);
+    } else {
+      expect(result, 0);
+    }
+  });
+
+  test('trueHeading applies declination on Android only', () {
+    const lat = 30.0444;
+    const lng = 31.2357;
+    const magnetic = 0.0;
+
+    final withDeclination = QiblahCompassService.trueHeading(
+      magneticHeading: magnetic,
+      latitude: lat,
+      longitude: lng,
+      applyDeclination: true,
+      androidHoldOffset: 0,
+    );
+    final withoutDeclination = QiblahCompassService.trueHeading(
+      magneticHeading: magnetic,
+      latitude: lat,
+      longitude: lng,
+      applyDeclination: false,
+      androidHoldOffset: 0,
+    );
+
+    expect(withoutDeclination, 0);
+    if (Platform.isAndroid) {
+      expect(withDeclination, isNot(0));
+    } else {
+      expect(withDeclination, 0);
+    }
+  });
+
+  test('Gamasa qiblah bearing points southeast toward Makkah', () {
+    expect(
+      QiblahBearing.fromNorth(31.4436, 31.5396),
+      closeTo(141.54, 0.01),
+    );
+  });
+
+  test('smoothAngle handles wrap-around without jumps', () {
+    final smoothed = QiblahCompassService.smoothAngle(350, 10, 0.5);
+    expect(smoothed, closeTo(0, 0.001));
+  });
+
+  test('needsSensorCalibration flags unreliable Android readings', () {
+    expect(QiblahCompassService.needsSensorCalibration(-1), isTrue);
+    expect(QiblahCompassService.needsSensorCalibration(15), isFalse);
+    expect(QiblahCompassService.needsSensorCalibration(45), isTrue);
+    expect(QiblahCompassService.needsSensorCalibration(null), isFalse);
   });
 
   test('resolveSupportedLocale maps to supported languages', () {

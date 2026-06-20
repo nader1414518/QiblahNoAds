@@ -84,6 +84,13 @@
     "tz": "Africa/Cairo"
   },
   {
+    "name": "Gamasa",
+    "country": "Egypt",
+    "lat": 31.4436,
+    "lng": 31.5396,
+    "tz": "Africa/Cairo"
+  },
+  {
     "name": "Amman",
     "country": "Jordan",
     "lat": 31.9454,
