@@ -121,22 +121,53 @@ class NotificationService {
       final locale = _preferences.getEffectiveLocale();
       final l10n = lookupAppLocalizations(locale);
 
+      await _schedulePrayerNotification(
+        prayer: prayer,
+        title: l10n.notificationPrayerTitle,
+        body: l10n.notificationPrayerBody(l10n.prayerName(prayer)),
+        scheduledTime: timezoneService.toLocationDateTime(
+          timeZoneId,
+          scheduledTime,
+        ),
+      );
+    }
+  }
+
+  Future<void> _schedulePrayerNotification({
+    required PrayerName prayer,
+    required String title,
+    required String body,
+    required tz.TZDateTime scheduledTime,
+  }) async {
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'prayer_reminders',
+        'Prayer Reminders',
+        channelDescription: 'Notifications for daily prayer times',
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
+      iOS: const DarwinNotificationDetails(),
+    );
+
+    try {
       await _plugin.zonedSchedule(
         _notificationIdFor(prayer),
-        l10n.notificationPrayerTitle,
-        l10n.notificationPrayerBody(l10n.prayerName(prayer)),
-        timezoneService.toLocationDateTime(timeZoneId, scheduledTime),
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'prayer_reminders',
-            'Prayer Reminders',
-            channelDescription: 'Notifications for daily prayer times',
-            importance: Importance.max,
-            priority: Priority.high,
-          ),
-          iOS: DarwinNotificationDetails(),
-        ),
+        title,
+        body,
+        scheduledTime,
+        details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+      return;
+    } catch (_) {
+      await _plugin.zonedSchedule(
+        _notificationIdFor(prayer),
+        title,
+        body,
+        scheduledTime,
+        details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       );
     }
   }

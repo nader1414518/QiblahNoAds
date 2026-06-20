@@ -79,15 +79,26 @@ class TimezoneService {
 
   tz.TZDateTime toLocationDateTime(String timeZoneId, DateTime prayerTime) {
     ensureInitialized();
-    final location = tz.getLocation(timeZoneId);
-    return tz.TZDateTime(
-      location,
-      prayerTime.year,
-      prayerTime.month,
-      prayerTime.day,
-      prayerTime.hour,
-      prayerTime.minute,
-      prayerTime.second,
-    );
+    try {
+      final location = tz.getLocation(timeZoneId);
+      return tz.TZDateTime(
+        location,
+        prayerTime.year,
+        prayerTime.month,
+        prayerTime.day,
+        prayerTime.hour,
+        prayerTime.minute,
+        prayerTime.second,
+      );
+    } catch (_) {
+      return tz.TZDateTime.utc(
+        prayerTime.year,
+        prayerTime.month,
+        prayerTime.day,
+        prayerTime.hour,
+        prayerTime.minute,
+        prayerTime.second,
+      );
+    }
   }
 }

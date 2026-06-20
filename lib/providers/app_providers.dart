@@ -184,6 +184,23 @@ class PrayerTimesState {
   final List<PrayerScheduleEntry> schedule;
   final bool isLoading;
   final String? errorCode;
+
+  PrayerTimesState copyWith({
+    DailyPrayerTimes? today,
+    DailyPrayerTimes? tomorrow,
+    List<PrayerScheduleEntry>? schedule,
+    bool? isLoading,
+    String? errorCode,
+    bool clearErrorCode = false,
+  }) {
+    return PrayerTimesState(
+      today: today ?? this.today,
+      tomorrow: tomorrow ?? this.tomorrow,
+      schedule: schedule ?? this.schedule,
+      isLoading: isLoading ?? this.isLoading,
+      errorCode: clearErrorCode ? null : (errorCode ?? this.errorCode),
+    );
+  }
 }
 
 class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
@@ -200,15 +217,38 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
   final PreferencesService _preferences;
   final NotificationService _notificationService;
   final Ref _ref;
+  Future<void>? _ongoingLoad;
+  int _loadGeneration = 0;
 
-  Future<void> load() async {
+  Future<void> load() {
+    final existing = _ongoingLoad;
+    if (existing != null) {
+      return existing;
+    }
+
+    final generation = ++_loadGeneration;
+    final future = _loadImpl(generation);
+    _ongoingLoad = future;
+    return future.whenComplete(() {
+      if (_ongoingLoad == future) {
+        _ongoingLoad = null;
+      }
+    });
+  }
+
+  Future<void> _loadImpl(int generation) async {
     final location = _ref.read(locationProvider).location;
     if (location == null) {
-      state = const PrayerTimesState(errorCode: 'location_not_set');
+      if (generation == _loadGeneration) {
+        state = const PrayerTimesState(errorCode: 'location_not_set');
+      }
       return;
     }
 
-    state = const PrayerTimesState(isLoading: true);
+    if (generation == _loadGeneration) {
+      state = state.copyWith(isLoading: true, clearErrorCode: true);
+    }
+
     final now = DateTime.now();
     final method = _preferences.getCalculationMethod();
     final madhab = _preferences.getMadhab();
@@ -224,6 +264,10 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
         adjustments: adjustments,
         month: DateTime(now.year, now.month),
       );
+
+      if (generation != _loadGeneration) {
+        return;
+      }
 
       final todayKey = _dateKey(now);
       final tomorrow = DateTime(now.year, now.month, now.day + 1);
@@ -245,12 +289,25 @@ class PrayerTimesNotifier extends StateNotifier<PrayerTimesState> {
         isLoading: false,
       );
 
-      await _notificationService.reschedulePrayerNotifications(
-        today: today,
-        tomorrow: tomorrowTimes,
-        timeZoneId: location.timeZoneId,
-      );
-    } catch (error) {
+      try {
+        await _notificationService.reschedulePrayerNotifications(
+          today: today,
+          tomorrow: tomorrowTimes,
+          timeZoneId: location.timeZoneId,
+        );
+      } catch (_) {
+        // Prayer times should still display when notification scheduling fails.
+      }
+    } catch (_) {
+      if (generation != _loadGeneration) {
+        return;
+      }
+
+      if (state.today != null) {
+        state = state.copyWith(isLoading: false, errorCode: 'failed_to_load');
+        return;
+      }
+
       state = const PrayerTimesState(
         isLoading: false,
         errorCode: 'failed_to_load',

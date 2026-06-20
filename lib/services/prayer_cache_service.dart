@@ -34,7 +34,11 @@ class PrayerCacheService {
     final cachedJson = _preferences.getPrayerCache();
 
     if (cachedKey == key && cachedJson != null) {
-      return _decodeCache(cachedJson);
+      try {
+        return _decodeCache(cachedJson);
+      } catch (_) {
+        // Recompute when stored cache is invalid or from an older schema.
+      }
     }
 
     final computed = _calculator.calculateMonth(
